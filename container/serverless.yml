@@ -1,0 +1,28 @@
+service: news-rs1-es
+
+frameworkVersion: '3'
+
+custom:
+  bucketName: news.rs1.es
+
+provider:
+  name: aws
+  runtime: python3.9
+  stage: prod
+  region: eu-west-1
+  tags:
+    project: ${self:service}
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - 's3:GetObject'
+            - 's3:PutObject'
+            - 's3:DeleteObject'
+          Resource: arn:aws:s3:::${self:custom.bucketName}/*
+functions:
+  main:
+    image: <ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/news-rs1-es@sha256:9e448dc123efe679f2f37b9942a534862bb979fa6cc4794c03d37e048a42a4d6
+    memorySize: 768
+    timeout: 180
