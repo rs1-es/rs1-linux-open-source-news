@@ -518,13 +518,13 @@ def createVideos(file, entries, lang):
     file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
     if lang == "en":
         temp1 = """<div class="language-bar-item item-active">
-        <a href="/">EN</a>
+        <a href="/videos/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/videos/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/videos/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -533,13 +533,13 @@ def createVideos(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item">
-        <a href="/fr/">FR</a>
+        <a href="/fr/videos/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/videos/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/videos/">JP</a>
         </div>
         </div>
         </div>
@@ -561,13 +561,13 @@ def createVideos(file, entries, lang):
         </div>"""
     elif lang == "es":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/videos/">EN</a>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/es/">ES</a>
+        <a href="/es/videos/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/videos/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -576,13 +576,13 @@ def createVideos(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item">
-        <a href="/fr/">FR</a>
+        <a href="/fr/videos/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/videos/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/videos/">JP</a>
         </div>
         </div>
         </div>
@@ -604,13 +604,13 @@ def createVideos(file, entries, lang):
         </div>"""
     elif lang == "de":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/videos/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/videos/">ES</a>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/de/">DE</a>
+        <a href="/de/videos/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -619,13 +619,13 @@ def createVideos(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item">
-        <a href="/fr/">FR</a>
+        <a href="/fr/videos/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/videos/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/videos/">JP</a>
         </div>
         </div>
         </div>
@@ -647,13 +647,13 @@ def createVideos(file, entries, lang):
         </div>"""
     elif lang == "fr":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/videos/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/videos/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/videos/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -662,13 +662,13 @@ def createVideos(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/fr/">FR</a>
+        <a href="/fr/videos/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/videos/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/videos/">JP</a>
         </div>
         </div>
         </div>
@@ -690,13 +690,13 @@ def createVideos(file, entries, lang):
         </div>"""
     elif lang == "pt":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/videos/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/videos/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/videos/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -705,13 +705,13 @@ def createVideos(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item>
-        <a href="/fr/">FR</a>
+        <a href="/fr/videos/">FR</a>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/pt/">PT</a>
+        <a href="/pt/videos/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/videos/">JP</a>
         </div>
         </div>
         </div>
@@ -733,13 +733,13 @@ def createVideos(file, entries, lang):
         </div>"""
     elif lang == "jp":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/videos/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/videos/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/videos/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -748,13 +748,13 @@ def createVideos(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item>
-        <a href="/fr/">FR</a>
+        <a href="/fr/videos/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/videos/">PT</a>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/jp/">JP</a>
+        <a href="/jp/videos/">JP</a>
         </div>
         </div>
         </div>
@@ -800,13 +800,13 @@ def createMore(file, entries, lang):
     file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
     if lang == "en":
         temp1 = """<div class="language-bar-item item-active">
-        <a href="/">EN</a>
+        <a href="/more/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/more/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/more/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -815,13 +815,13 @@ def createMore(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item">
-        <a href="/fr/">FR</a>
+        <a href="/fr/more/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/more/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/more/">JP</a>
         </div>
         </div>
         </div>
@@ -843,13 +843,13 @@ def createMore(file, entries, lang):
         </div>"""
     elif lang == "es":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/more/">EN</a>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/es/">ES</a>
+        <a href="/es/more/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/more/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -858,13 +858,13 @@ def createMore(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item">
-        <a href="/fr/">FR</a>
+        <a href="/fr/more/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/more/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/more/">JP</a>
         </div>
         </div>
         </div>
@@ -886,13 +886,13 @@ def createMore(file, entries, lang):
         </div>"""
     elif lang == "de":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/more/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/more/">ES</a>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/de/">DE</a>
+        <a href="/de/more/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -901,13 +901,13 @@ def createMore(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item">
-        <a href="/fr/">FR</a>
+        <a href="/fr/more/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/more/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/more/">JP</a>
         </div>
         </div>
         </div>
@@ -929,13 +929,13 @@ def createMore(file, entries, lang):
         </div>"""
     elif lang == "fr":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/more/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/more/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/more/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -944,13 +944,13 @@ def createMore(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/fr/">FR</a>
+        <a href="/fr/more/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/more/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/more/">JP</a>
         </div>
         </div>
         </div>
@@ -972,13 +972,13 @@ def createMore(file, entries, lang):
         </div>"""
     elif lang == "pt":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/more/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/more/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/more/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -987,13 +987,13 @@ def createMore(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item>
-        <a href="/fr/">FR</a>
+        <a href="/fr/more/">FR</a>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/pt/">PT</a>
+        <a href="/pt/more/">PT</a>
         </div>
         <div class="language-bar-item">
-        <a href="/jp/">JP</a>
+        <a href="/jp/more/">JP</a>
         </div>
         </div>
         </div>
@@ -1015,13 +1015,13 @@ def createMore(file, entries, lang):
         </div>"""
     elif lang == "jp":
         temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
+        <a href="/more/">EN</a>
         </div>
         <div class="language-bar-item">
-        <a href="/es/">ES</a>
+        <a href="/es/more/">ES</a>
         </div>
         <div class="language-bar-item">
-        <a href="/de/">DE</a>
+        <a href="/de/more/">DE</a>
         </div>
         <div class="language-bar-item other-div">
         <span>...</span>
@@ -1030,13 +1030,13 @@ def createMore(file, entries, lang):
         <span>&nbsp;</span>
         </div>
         <div class="language-bar-item>
-        <a href="/fr/">FR</a>
+        <a href="/fr/more/">FR</a>
         </div>
         <div class="language-bar-item">
-        <a href="/pt/">PT</a>
+        <a href="/pt/more/">PT</a>
         </div>
         <div class="language-bar-item item-active">
-        <a href="/jp/">JP</a>
+        <a href="/jp/more/">JP</a>
         </div>
         </div>
         </div>
