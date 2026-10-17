@@ -230,10 +230,10 @@ def createHome(file, entries, lang):
     file.write("<html lang=\"%s\">\n" %strings[lang]["lang"])
     file.write("<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta name=\"description\" content=\"%s\">\n" %strings[lang]["websiteDesc"])
     if lang != "en":
-        file.write("<title>%s - RS1 Linux News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.css\">\n</head>\n" %strings[lang]["langFull"])
+        file.write("<title>%s - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n" %strings[lang]["langFull"])
     else:
-        file.write("<title>RS1 Linux News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.css\">\n</head>\n")
-    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
+        file.write("<title>RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n")
+    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux & Open Source News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
     if lang == "en":
         temp1 = """<div class="language-bar-item item-active">
         <a href="/">EN</a>
@@ -495,7 +495,7 @@ def createHome(file, entries, lang):
     file.write(temp1)
     createEntries(file, entries)
     temp2 = """<footer>
-    <a href="/"><h2>RS1 Linux News</h2></a>
+    <a href="/"><h2>RS1 Linux & Open Source News</h2></a>
     <div class="footer-content">
     <div>
     <p>Javascript-free Linux/open source news aggregator.</p>
@@ -512,10 +512,10 @@ def createVideos(file, entries, lang):
     file.write("<html lang=\"%s\">\n" %strings[lang]["lang"])
     file.write("<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta name=\"description\" content=\"%s\">\n" %strings[lang]["websiteDesc"])
     if lang != "en":
-        file.write("<title>Videos (%s) - RS1 Linux News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.css\">\n</head>\n" %strings[lang]["langFull"])
+        file.write("<title>Videos (%s) - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n" %strings[lang]["langFull"])
     else:
-        file.write("<title>Videos - RS1 Linux News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.css\">\n</head>\n")
-    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
+        file.write("<title>Videos - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n")
+    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux & Open Source News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
     if lang == "en":
         temp1 = """<div class="language-bar-item item-active">
         <a href="/videos/">EN</a>
@@ -777,7 +777,7 @@ def createVideos(file, entries, lang):
     file.write(temp1)
     createEntries(file, entries)
     temp2 = """<footer>
-    <a href="/"><h2>RS1 Linux News</h2></a>
+    <a href="/"><h2>RS1 Linux & Open Source News</h2></a>
     <div class="footer-content">
     <div>
     <p>Javascript-free Linux/open source news aggregator.</p>
@@ -794,10 +794,10 @@ def createMore(file, entries, lang):
     file.write("<html lang=\"%s\">\n" %strings[lang]["lang"])
     file.write("<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta name=\"description\" content=\"%s\">\n" %strings[lang]["websiteDesc"])
     if lang != "en":
-        file.write("<title>More (%s) - RS1 Linux News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.css\">\n</head>\n" %strings[lang]["langFull"])
+        file.write("<title>More (%s) - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n" %strings[lang]["langFull"])
     else:
-        file.write("<title>More - RS1 Linux News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.css\">\n</head>\n")
-    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
+        file.write("<title>More - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n")
+    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux & Open Source News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
     if lang == "en":
         temp1 = """<div class="language-bar-item item-active">
         <a href="/more/">EN</a>
@@ -1059,7 +1059,7 @@ def createMore(file, entries, lang):
     file.write(temp1)
     createEntries(file, entries)
     temp2 = """<footer>
-    <a href="/"><h2>RS1 Linux News</h2></a>
+    <a href="/"><h2>RS1 Linux & Open Source News</h2></a>
     <div class="footer-content">
     <div>
     <p>Javascript-free Linux/open source news aggregator.</p>
