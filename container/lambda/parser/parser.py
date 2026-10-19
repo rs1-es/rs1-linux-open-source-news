@@ -32,7 +32,8 @@ strings = {
             ["https://lwn.net/headlines/rss", "LWN.net", "https://lwn.net/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://planet.debian.org/rss20.xml", "Planet Debian", "https://planet.debian.org/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://tuxphones.com/rss/", "TuxPhones", "https://tuxphones.com/", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://www.linuxinsider.com/rss-feed", "LinuxInsider", "https://www.linuxinsider.com/", "%a, %d %b %Y %H:%M:%S %z"]],
+            ["https://www.linuxinsider.com/rss-feed", "LinuxInsider", "https://www.linuxinsider.com/", "%a, %d %b %Y %H:%M:%S %z"],
+            ["https://joho-todai.com/en/rss/", "Joho no Todai (English)", "https://joho-todai.com/", "%a, %d %b %Y %H:%M:%S %Z"]],
             "videos": [["https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg", "DistroTube", "https://distro.tube/", "%Y-%m-%dT%H:%M:%S%z"],
             ["https://www.youtube.com/feeds/videos.xml?channel_id=UCONH73CdRXUjlh3-DdLGCPw", "Niccolò Ve", "https://tube.kockatoo.org/c/niccolo_ve/videos", "%Y-%m-%dT%H:%M:%S%z"],
             ["https://www.youtube.com/feeds/videos.xml?channel_id=UCuHJawjMUOk4gjywwDg727w", "Riba Linux", "https://odysee.com/@Riba-Linux:5", "%Y-%m-%dT%H:%M:%S%z"],
@@ -182,12 +183,42 @@ strings = {
 
 s3 = boto3.resource('s3')
 
+SITE_NAME = "RS1 Linux & Open Source News"
+
+# Orden de los idiomas en la barra: los 3 primeros visibles, el resto en el menú "..."
+LANGUAGES = ["en", "es", "de", "fr", "pt", "jp"]
+LANGUAGES_VISIBLE = LANGUAGES[:3]
+LANGUAGES_HIDDEN = LANGUAGES[3:]
+
+# Una entrada por sección: carpeta de salida, etiqueta de la barra y prefijo del <title>
+SECTIONS = {
+    "news":   {"dir": "",        "label": "NEWS",   "title": None},
+    "videos": {"dir": "videos/", "label": "VIDEOS", "title": "Videos"},
+    "more":   {"dir": "more/",   "label": "MORE",   "title": "More"},
+}
+
+FOOTER = """<footer>
+<a href="/"><h2>%s</h2></a>
+<div class="footer-content">
+<div>
+<p>Javascript-free Linux/open source news aggregator.</p>
+<p>Linux is a registered trademark of Linus Torvalds.</p>
+</div>
+</div>
+</footer>
+</body>
+</html>""" % SITE_NAME
+
+s3 = boto3.resource('s3')
+
+
+# ---------- Feeds ----------
+
 def parseFeed(url, author, homeURL, parseDate, globalFeed):
     d = feedparser.parse(url)
     for entry in d.entries:
         if author in ["DistroWatch", "LWN.net"]:
             entry.published = entry.updated
-        dt = 0
         try:
             dt = datetime.datetime.strptime(entry.published, parseDate)
         except ValueError:
@@ -210,6 +241,61 @@ def limitFeeds(feed):
 def uploadFileS3(localFile):
     s3.Bucket('news.rs1.es').upload_file('/tmp/' + localFile, localFile, ExtraArgs={'ContentType': 'text/html'})
 
+
+# ---------- HTML ----------
+
+def sectionUrl(lang, section):
+    """URL absoluta de una sección en un idioma: /, /videos/, /es/more/..."""
+    prefix = "/" if lang == "en" else "/%s/" % lang
+    return prefix + SECTIONS[section]["dir"]
+
+def pageTitle(section, lang):
+    sectionTitle = SECTIONS[section]["title"]
+    langFull = strings[lang]["langFull"]
+    if sectionTitle is None:
+        prefix = "" if lang == "en" else "%s - " % langFull
+    else:
+        prefix = "%s - " % sectionTitle if lang == "en" else "%s (%s) - " % (sectionTitle, langFull)
+    return prefix + SITE_NAME
+
+def barItem(cssClass, href, text, active):
+    classes = cssClass + (" item-active" if active else "")
+    return '<div class="%s">\n<a href="%s">%s</a>\n</div>\n' % (classes, href, text)
+
+def createFilterBar(section, lang):
+    def langItem(code):
+        return barItem("language-bar-item", sectionUrl(code, section), code.upper(), code == lang)
+
+    topics = "".join(
+        barItem("topic-bar-item", sectionUrl(lang, name), info["label"], name == section)
+        for name, info in SECTIONS.items()
+    )
+    return (
+        '<div class="filter-bar"><div class="language-bar">\n'
+        '<div class="language-bar-title"><span>Language:</span></div>'
+        + "".join(langItem(c) for c in LANGUAGES_VISIBLE)
+        + '<div class="language-bar-item other-div">\n<span>...</span>\n<div class="other-languages">\n'
+        '<div class="language-bar-item no-hover">\n<span>&nbsp;</span>\n</div>\n'
+        + "".join(langItem(c) for c in LANGUAGES_HIDDEN)
+        + '</div>\n</div>\n</div>\n'
+        '<div class="topic-bar">\n<div class="topic-bar-title">\n<span>Topic:</span>\n</div>\n'
+        + topics
+        + '</div>\n</div>'
+    )
+
+def createHeader(section, lang):
+    return (
+        '<!DOCTYPE html>\n'
+        '<html lang="%s">\n'
+        '<head>\n<meta charset="utf-8">\n'
+        '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
+        '<meta name="description" content="%s">\n'
+        '<title>%s</title><link rel="shortcut icon" href="/favicon.png" type="image/png">\n'
+        '<link rel="stylesheet" href="/main.min.css">\n</head>\n'
+        '<body>\n<div class="topbar">\n<div class="main-title">\n<a href="/"><h1>%s</h1></a>\n</div>\n'
+        '<div class="topbar-links"><div class="topbar-link-item"><a href="/about.html">About</a>\n</div>\n</div>\n</div>\n'
+    ) % (strings[lang]["lang"], strings[lang]["websiteDesc"], pageTitle(section, lang), SITE_NAME)
+
 def createEntries(file, entries):
     file.write("<div class=\"post-list\">\n")
     for entry in entries:
@@ -225,853 +311,17 @@ def createEntries(file, entries):
         file.write("</div>\n")
     file.write("</div>\n")
 
-def createHome(file, entries, lang):
-    file.write("<!DOCTYPE html>\n")
-    file.write("<html lang=\"%s\">\n" %strings[lang]["lang"])
-    file.write("<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta name=\"description\" content=\"%s\">\n" %strings[lang]["websiteDesc"])
-    if lang != "en":
-        file.write("<title>%s - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n" %strings[lang]["langFull"])
-    else:
-        file.write("<title>RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n")
-    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux & Open Source News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
-    if lang == "en":
-        temp1 = """<div class="language-bar-item item-active">
-        <a href="/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "es":
-        temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/es/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/es/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/es/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/es/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "de":
-        temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/">ES</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/de/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/de/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/de/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/de/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "fr":
-        temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/fr/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/fr/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/fr/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/fr/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "pt":
-        temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item>
-        <a href="/fr/">FR</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/pt/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/pt/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/pt/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/pt/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "jp":
-        temp1 = """<div class="language-bar-item">
-        <a href="/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item>
-        <a href="/fr/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/">PT</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/jp/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/jp/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/jp/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/jp/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    file.write(temp1)
+def createPage(file, entries, section, lang):
+    file.write(createHeader(section, lang))
+    file.write(createFilterBar(section, lang))
     createEntries(file, entries)
-    temp2 = """<footer>
-    <a href="/"><h2>RS1 Linux & Open Source News</h2></a>
-    <div class="footer-content">
-    <div>
-    <p>Javascript-free Linux/open source news aggregator.</p>
-    <p>Linux is a registered trademark of Linus Torvalds.</p>
-    </div>
-    </div>
-    </footer>
-    </body>
-    </html>"""
-    file.write(temp2)
+    file.write(FOOTER)
 
-def createVideos(file, entries, lang):
-    file.write("<!DOCTYPE html>\n")
-    file.write("<html lang=\"%s\">\n" %strings[lang]["lang"])
-    file.write("<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta name=\"description\" content=\"%s\">\n" %strings[lang]["websiteDesc"])
-    if lang != "en":
-        file.write("<title>Videos (%s) - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n" %strings[lang]["langFull"])
-    else:
-        file.write("<title>Videos - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n")
-    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux & Open Source News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
-    if lang == "en":
-        temp1 = """<div class="language-bar-item item-active">
-        <a href="/videos/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/videos/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/videos/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/videos/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/videos/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/videos/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/">NEWS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "es":
-        temp1 = """<div class="language-bar-item">
-        <a href="/videos/">EN</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/es/videos/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/videos/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/videos/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/videos/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/videos/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/es/">NEWS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/es/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/es/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "de":
-        temp1 = """<div class="language-bar-item">
-        <a href="/videos/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/videos/">ES</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/de/videos/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/videos/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/videos/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/videos/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/de/">NEWS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/de/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/de/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "fr":
-        temp1 = """<div class="language-bar-item">
-        <a href="/videos/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/videos/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/videos/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/fr/videos/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/videos/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/videos/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/fr/">NEWS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/fr/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/fr/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "pt":
-        temp1 = """<div class="language-bar-item">
-        <a href="/videos/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/videos/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/videos/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item>
-        <a href="/fr/videos/">FR</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/pt/videos/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/videos/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/pt/">NEWS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/pt/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/pt/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "jp":
-        temp1 = """<div class="language-bar-item">
-        <a href="/videos/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/videos/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/videos/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item>
-        <a href="/fr/videos/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/videos/">PT</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/jp/videos/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/jp/">NEWS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/jp/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/jp/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    file.write(temp1)
-    createEntries(file, entries)
-    temp2 = """<footer>
-    <a href="/"><h2>RS1 Linux & Open Source News</h2></a>
-    <div class="footer-content">
-    <div>
-    <p>Javascript-free Linux/open source news aggregator.</p>
-    <p>Linux is a registered trademark of Linus Torvalds.</p>
-    </div>
-    </div>
-    </footer>
-    </body>
-    </html>"""
-    file.write(temp2)
 
-def createMore(file, entries, lang):
-    file.write("<!DOCTYPE html>\n")
-    file.write("<html lang=\"%s\">\n" %strings[lang]["lang"])
-    file.write("<head>\n<meta charset=\"utf-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n<meta name=\"description\" content=\"%s\">\n" %strings[lang]["websiteDesc"])
-    if lang != "en":
-        file.write("<title>More (%s) - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n" %strings[lang]["langFull"])
-    else:
-        file.write("<title>More - RS1 Linux & Open Source News</title><link rel=\"shortcut icon\" href=\"/favicon.png\" type=\"image/png\">\n<link rel=\"stylesheet\" href=\"/main.min.css\">\n</head>\n")
-    file.write("<body>\n<div class=\"topbar\">\n<div class=\"main-title\">\n<a href=\"/\"><h1>RS1 Linux & Open Source News</h1></a>\n</div>\n<div class=\"topbar-links\"><div class=\"topbar-link-item\"><a href=\"/about.html\">About</a>\n</div>\n</div>\n</div>\n<div class=\"filter-bar\"><div class=\"language-bar\">\n<div class=\"language-bar-title\"><span>Language:</span></div>")
-    if lang == "en":
-        temp1 = """<div class="language-bar-item item-active">
-        <a href="/more/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/more/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/more/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/more/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/more/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/more/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "es":
-        temp1 = """<div class="language-bar-item">
-        <a href="/more/">EN</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/es/more/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/more/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/more/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/more/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/more/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/es/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/es/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/es/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "de":
-        temp1 = """<div class="language-bar-item">
-        <a href="/more/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/more/">ES</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/de/more/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item">
-        <a href="/fr/more/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/more/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/more/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/de/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/de/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/de/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "fr":
-        temp1 = """<div class="language-bar-item">
-        <a href="/more/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/more/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/more/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/fr/more/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/more/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/more/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/fr/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/fr/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/fr/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "pt":
-        temp1 = """<div class="language-bar-item">
-        <a href="/more/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/more/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/more/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item>
-        <a href="/fr/more/">FR</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/pt/more/">PT</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/jp/more/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/pt/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/pt/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/pt/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    elif lang == "jp":
-        temp1 = """<div class="language-bar-item">
-        <a href="/more/">EN</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/es/more/">ES</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/de/more/">DE</a>
-        </div>
-        <div class="language-bar-item other-div">
-        <span>...</span>
-        <div class="other-languages">
-        <div class="language-bar-item no-hover">
-        <span>&nbsp;</span>
-        </div>
-        <div class="language-bar-item>
-        <a href="/fr/more/">FR</a>
-        </div>
-        <div class="language-bar-item">
-        <a href="/pt/more/">PT</a>
-        </div>
-        <div class="language-bar-item item-active">
-        <a href="/jp/more/">JP</a>
-        </div>
-        </div>
-        </div>
-        </div>
-        <div class="topic-bar">
-        <div class="topic-bar-title">
-        <span>Topic:</span>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/jp/">NEWS</a>
-        </div>
-        <div class="topic-bar-item">
-        <a href="/jp/videos/">VIDEOS</a>
-        </div>
-        <div class="topic-bar-item item-active">
-        <a href="/jp/more/">MORE</a>
-        </div>
-        </div>
-        </div>"""
-    file.write(temp1)
-    createEntries(file, entries)
-    temp2 = """<footer>
-    <a href="/"><h2>RS1 Linux & Open Source News</h2></a>
-    <div class="footer-content">
-    <div>
-    <p>Javascript-free Linux/open source news aggregator.</p>
-    <p>Linux is a registered trademark of Linus Torvalds.</p>
-    </div>
-    </div>
-    </footer>
-    </body>
-    </html>"""
-    file.write(temp2)
+# ---------- Proceso principal ----------
 
-def mainProcess(section, feedInfo, path, lang):
+def mainProcess(section, feedInfo, lang):
+    path = ("" if lang == "en" else lang + "/") + SECTIONS[section]["dir"]
     receivedFeeds = []
     for feed in feedInfo:
         print(feed[1])
@@ -1079,30 +329,19 @@ def mainProcess(section, feedInfo, path, lang):
             func_timeout.func_timeout(10, parseFeed, args=(feed[0], feed[1], feed[2], feed[3], receivedFeeds))
         except func_timeout.FunctionTimedOut:
             pass
-    print("- %s feeds parsed -" %section)
+    print("- %s feeds parsed -" % section)
 
-    joinFeedSorted = sortFeeds(receivedFeeds)
-    joinFeedSorted = limitFeeds(joinFeedSorted)
+    joinFeedSorted = limitFeeds(sortFeeds(receivedFeeds))
 
-    if os.path.exists("/tmp/" + path) == False:
-        os.makedirs("/tmp/" + path)
-
-    htmlFile = open("/tmp/" + path + "index.html", "w")
-    if section == "news":
-        createHome(htmlFile, joinFeedSorted, lang)
-    elif section == "videos":
-        createVideos(htmlFile, joinFeedSorted, lang)
-    elif section == "more":
-        createMore(htmlFile, joinFeedSorted, lang)
-    htmlFile.close()
+    os.makedirs("/tmp/" + path, exist_ok=True)
+    with open("/tmp/" + path + "index.html", "w") as htmlFile:
+        createPage(htmlFile, joinFeedSorted, section, lang)
     print(path + "index.html saved")
     uploadFileS3(path + "index.html")
 
-mainProcess("news", strings["en"]["entries"]["news"], "", "en")
-mainProcess("videos", strings["en"]["entries"]["videos"], "videos/", "en")
-mainProcess("more", strings["en"]["entries"]["more"], "more/", "en")
+def main():
+    for lang in LANGUAGES:
+        for section in SECTIONS:
+            mainProcess(section, strings[lang]["entries"][section], lang)
 
-for i in ["es", "de", "fr", "pt", "jp"]:
-    mainProcess("news", strings[i]["entries"]["news"], i + "/", i)
-    mainProcess("videos", strings[i]["entries"]["videos"], i + "/videos/", i)
-    mainProcess("more", strings[i]["entries"]["more"], i + "/more/", i)
+main()

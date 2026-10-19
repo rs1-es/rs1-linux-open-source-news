@@ -23,6 +23,6 @@ provider:
           Resource: arn:aws:s3:::${self:custom.bucketName}/*
 functions:
   main:
-    image: <ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/news-rs1-es@sha256:a9e52f406b81f47abc43ab0a71dbc5422d5dc36df8c9de5aa83b6726254b1074
+    image: <ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/news-rs1-es@sha256:0132948806c46849a905fe3c93ba8d5f506b1578a148fb372966ef976d72a1f0
     memorySize: 512
     timeout: 180
