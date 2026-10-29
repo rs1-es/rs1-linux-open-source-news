@@ -6,14 +6,16 @@ This is the source code of https://news.rs1.es. A Python script parses feeds (RS
 
 ### Layout
 
-- `container/lambda/parser/news_parser.py`: feed list per language and HTML generation.
+- `container/lambda/parser/news_parser.py`: feed download and HTML generation.
+- `container/lambda/parser/feeds.json`: feeds per language and section (`news`, `videos`, `more`).
+- `container/lambda/parser/requirements.txt`: pinned dependencies.
 - `container/lambda/parser/index.py`: Lambda handler.
 - `container/Dockerfile`, `container/serverless.yml`, `container/deploy.sh`: image build and deployment.
 - `public/`: static files (CSS, about, 404, sitemap).
 
 ### Run locally
 
-Requires `feedparser`, `pytz` and `func_timeout`. Set `OUTPUT_DIR` to write the pages to a local folder instead of uploading them to S3 (`boto3` is only needed without it):
+Run `pip install -r container/lambda/parser/requirements.txt`. Set `OUTPUT_DIR` to write the pages to a local folder instead of uploading them to S3 (`boto3` is only needed without it):
 
 ```
 cd container/lambda/parser
@@ -26,4 +28,8 @@ Run `container/deploy.sh`: it builds the image with podman, pushes it to ECR, wr
 
 ### Contribute
 
-Create an issue if you want to add a page. Provide the feed link.
+Create an issue if you want to add a page, providing the feed link, or open a pull request adding it to `container/lambda/parser/feeds.json`:
+
+```
+{"url": "https://example.com/feed", "name": "Example", "home": "https://example.com/"}
+```

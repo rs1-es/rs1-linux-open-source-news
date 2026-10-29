@@ -1,174 +1,18 @@
 import feedparser
 import datetime
 import html
+import json
 import os
 import pytz
 import func_timeout
 from concurrent.futures import ThreadPoolExecutor
 
-strings = {
-    "en": {
-        "lang": "en",
-        "langFull": "English",
-        "websiteDesc": "Javascript-free Linux/open source news aggregator",
-        "entries": {
-            "news": [["https://9to5linux.com/feed/atom", "9to5Linux", "https://9to5linux.com/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://linuxiac.com/feed/", "Linuxiac", "https://linuxiac.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://distrowatch.com/news/dw.xml", "DistroWatch", "https://distrowatch.com", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://itsfoss.com/rss/", "It's FOSS", "https://itsfoss.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.gamingonlinux.com/article_rss.php", "GamingOnLinux", "https://www.gamingonlinux.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.omgubuntu.co.uk/feed", "OMG! Ubuntu!", "https://www.omgubuntu.co.uk/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://linuxsecurity.com/linuxsecurity_articles.xml", "LinuxSecurity.com", "https://linuxsecurity.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://debugpointnews.com/feed/", "DebugPoint NEWS", "https://debugpointnews.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.phoronix.com/rss.php", "Phoronix", "https://www.phoronix.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://feeds.feedburner.com/Ubuntubuzz", "Ubuntu Buzz!", "https://www.ubuntubuzz.com/", "%Y-%m-%dT%H:%M:%S.%f%z"],
-            ["https://linmob.net/feed.xml", "LINMOB.net", "https://linmob.net/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.linux-magazine.com/rss/feed/lmi_news", "Linux Magazine", "https://www.linux-magazine.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://fossforce.com/feed/", "FOSS Force", "https://fossforce.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://fullcirclemagazine.org/index.xml", "Full Circle Magazine", "https://fullcirclemagazine.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://news.opensuse.org/feed.xml", "openSUSE News", "https://news.opensuse.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.omglinux.com/feed/", "OMG! Linux", "https://www.omglinux.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://planet.kde.org/index.xml", "Planet KDE", "https://planet.kde.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://lwn.net/headlines/rss", "LWN.net", "https://lwn.net/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://planet.debian.org/rss20.xml", "Planet Debian", "https://planet.debian.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://tuxphones.com/rss/", "TuxPhones", "https://tuxphones.com/", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://www.linuxinsider.com/rss-feed", "LinuxInsider", "https://www.linuxinsider.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://joho-todai.com/en/rss/", "Joho no Todai (English)", "https://joho-todai.com/", "%a, %d %b %Y %H:%M:%S %Z"]],
-            "videos": [["https://www.youtube.com/feeds/videos.xml?channel_id=UCVls1GmFKf6WlTraIb_IaJg", "DistroTube", "https://distro.tube/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCONH73CdRXUjlh3-DdLGCPw", "Niccolò Ve", "https://tube.kockatoo.org/c/niccolo_ve/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCuHJawjMUOk4gjywwDg727w", "Riba Linux", "https://odysee.com/@Riba-Linux:5", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCld68syR8Wi-GY_n4CaoJGA", "Brodie Robertson", "https://odysee.com/@BrodieRobertson:5", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCMiyV_Ib77XLpzHPQH_q0qQ", "Veronica Explains", "https://tilvids.com/c/veronicaexplains_channel/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UC5UAwBUum7CPN5buc-_N1Fw", "The Linux Experiment", "https://tilvids.com/c/thelinuxexperiment_channel/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCMePQAfCxotiG_2B5qYv4aQ", "Linux User Space", "https://tilvids.com/a/linuxuserspace/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://framatube.org/feeds/videos.xml?accountId=8178", "Free Software Foundation", "https://framatube.org/a/fsf/videos", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://video.retroedge.tech/feeds/videos.xml?videoChannelId=4", "RetroEdge.Tech", "https://retroedge.tech/", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://tilvids.com/feeds/videos.xml?videoChannelId=71", "Linux Lounge", "https://tilvids.com/c/linux_lounge/videos", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCxQKHvKbmSzGMvUrVtJYnUA", "Learn Linux TV", "https://www.learnlinux.tv/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCoryWpk4QVYKFCJul9KBdyw", "Switched to Linux", "https://switchedtolinux.com/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCylGUf9BvQooEFjgdNudoQg", "The Linux Cast", "https://odysee.com/@thelinuxcast:4", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCfX55Sx5hEFjoC3cNs6mCUQ", "The Linux Foundation", "https://www.youtube.com/@LinuxfoundationOrg/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCNnUnr4gwyNmzx_Bbzvt29g", "LinuxScoop", "https://www.youtube.com/@linuxscoop/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCc3L72F_yWWr1V1ft_CDpAA", "9to5Linux (Videos)", "https://www.youtube.com/@9to5Linux/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UC1yGcBvdPGxRIMT1yo_bKIQ", "Jake@Linux", "https://www.youtube.com/@JakeLinux/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCjSEJkpGbcZhvo0lr-44X_w", "TechHut", "https://www.youtube.com/@TechHut/videos", "%Y-%m-%dT%H:%M:%S%z"]],
-            "more": [["https://www.linuxlinks.com/feed/", "LinuxLinks", "https://www.linuxlinks.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.fosslinux.com/feed", "FOSS Linux", "https://www.fosslinux.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://linuxtldr.com/feed/", "Linux TLDR", "https://linuxtldr.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://trendoceans.com/feed/", "TREND OCEANS", "https://trendoceans.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.cyberciti.com/atom/atom.xml", "nixCraft", "https://www.cyberciti.biz/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.linux.com/feed/", "Linux.com", "https://www.linux.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://linuxstans.com/feed/", "Linux Stans", "https://linuxstans.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.ubuntupit.com/feed/", "UbuntuPIT", "https://www.ubuntupit.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://feeds.feedburner.com/UbuntuhandbookNewsTutorialsHowtosForUbuntuLinux", "UbuntuHandbook", "https://ubuntuhandbook.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.tecmint.com/feed/", "Tecmint", "https://www.tecmint.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://opensource.com/feed", "Opensource.com", "https://opensource.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.redhat.com/sysadmin/rss.xml", "Red Hat - Enable Sysadmin", "https://www.redhat.com/sysadmin/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://feeds.feedburner.com/Ostechnix", "OSTechNix", "https://ostechnix.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://fedoramagazine.org/feed/", "Fedora Magazine", "https://fedoramagazine.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.debugpoint.com/feed/", "DebugPoint.com", "https://www.debugpoint.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.howtoforge.com/feed.rss", "HowtoForge", "https://www.howtoforge.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://thisweek.gnome.org/index.xml", "This Week in GNOME", "https://thisweek.gnome.org/", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://ubuntu.com/blog/feed", "Ubuntu Blog", "https://ubuntu.com/blog", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://linuxhint.com/feed/", "Linux Hint", "https://linuxhint.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.linuxuprising.com/feeds/posts/default", "Linux Uprising", "https://www.linuxuprising.com/", "%Y-%m-%dT%H:%M:%S.%f%z"],
-            ["https://boilingsteam.com/feed/", "Boiling Steam", "https://boilingsteam.com/", "%a, %d %b %Y %H:%M:%S %z"]]
-        }
-    },
-    "es": {
-        "lang": "es",
-        "langFull": "Español",
-        "websiteDesc": "Agregador de noticias sobre Linux y software libre, sin Javascript",
-        "entries": {
-            "news": [["https://feeds.feedburner.com/desdelinuxweb", "Desde Linux", "https://desdelinux.net/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://elpinguinotolkiano.wordpress.com/feed/", "El Pingüino Tolkiano", "https://elpinguinotolkiano.wordpress.com", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://h4ckseed.wordpress.com/feed/", "h4ckseed", "https://h4ckseed.wordpress.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://feeds.feedburner.com/LinuxAdictos", "Linux Adictos", "https://www.linuxadictos.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.muylinux.com/feed/", "MuyLinux", "https://www.muylinux.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://victorhckinthefreeworld.com/feed/", "Victorhck in the free world", "https://victorhckinthefreeworld.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://nksistemas.com/feed/", "NKSistemas", "https://nksistemas.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.kdeblog.com/feed", "KDE Blog", "https://www.kdeblog.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.linuxparty.es/?format=feed&type=rss", "LinuxParty", "https://www.linuxparty.es/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://laboratoriolinux.es/?format=feed&type=rss", "Laboratorio Linux", "https://laboratoriolinux.es/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://feeds.feedburner.com/ubunlog", "Ubunlog", "https://ubunlog.com/", "%a, %d %b %Y %H:%M:%S %z"]],
-            "videos": [["https://odysee.com/$/rss/@manosymaquinasentrevideos:6", "Manos y Máquinas Entre Vídeos", "https://odysee.com/@manosymaquinasentrevideos:6", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://fediverse.tv/feeds/videos.xml?videoChannelId=19129", "Atareao (Vídeos)", "https://fediverse.tv/c/atareao/videos", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://fediverse.tv/feeds/videos.xml?videoChannelId=22590", "Dani Sánchez", "https://fediverse.tv/c/danisanchez.net/videos", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UC6ImDlcMZukA-pqtIaXqbdA", "Cumpi Linux", "https://cumpi.ga/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCl8XUDjAOLc7GNKcDp9Nepg", "Locos por Linux", "https://www.youtube.com/@LocosporLinux/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCFRuGs1rZJ4oAaLsAjypt7A", "Desde Linux con Amor", "https://www.youtube.com/@DesdeLinuxConAmor/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCFnFYB2mWAdVwA7Q94AaLPA", "Linux en Casa", "https://www.youtube.com/@LinuxenCasa/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCgErca6xmDIcaHDnVghHk6w", "Nos Gusta Linux", "https://www.youtube.com/@nosgustalinux/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCta4Iy4TzMx8Xo0pwpkbWgg", "PatoJAD", "https://www.youtube.com/@PatoJAD/videos", "%Y-%m-%dT%H:%M:%S%z"]],
-            "more": [["https://voidnull.es/rss/", "voidNull", "https://voidnull.es/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.ochobitshacenunbyte.com/feed/", "ochobitshacenunbyte", "https://www.ochobitshacenunbyte.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://podcastlinux.com/feed", "Podcast Linux", "https://podcastlinux.com/", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://ugeek.github.io/feed.xml", "Blog Podcast uGeek", "https://ugeek.github.io/", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://elblogdelazaro.org/index.xml", "El Blog de Lázaro", "https://elblogdelazaro.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://atareao.es/feed/", "Atareao", "https://atareao.es/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://elbinario.net/feed/", "Elbinario", "https://elbinario.net/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://ubuntuperonista.blogspot.com/feeds/posts/default", "Ubuntu Peronista", "https://ubuntuperonista.blogspot.com/", "%Y-%m-%dT%H:%M:%S.%f%z"],
-            ["https://martinezmartinez.eu/feed/", "Blog de informática", "https://martinezmartinez.eu/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://feeds.feedburner.com/geeklandlinux", "geekland", "https://geekland.eu/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://cambiatealinux.com/rss", "Cambiate a Linux", "https://cambiatealinux.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.bujarra.com/feed/", "Blog Bujarra.com", "https://www.bujarra.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://56k.es/feed/", "56K", "https://56k.es/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["http://feeds.feedburner.com/UnBrutoConDebian", "Un bruto con Debian", "https://unbrutocondebian.blogspot.com/", "%Y-%m-%dT%H:%M:%S.%f%z"]]
-        }
-    },
-    "de": {
-        "lang": "de",
-        "langFull": "Deutsch",
-        "websiteDesc": "Javascript-freier Linux/Open-Source-Nachrichten-Aggregator",
-        "entries": {
-            "news": [["https://linuxnews.de/feed/", "LinuxNews", "https://linuxnews.de/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.linux-magazin.de/feed/", "Linux-Magazin", "https://www.linux-magazin.de/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://gnulinux.ch/rss.xml", "GNU/Linux.ch", "https://gnulinux.ch/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.computerbase.de/thema/linux/index.atom", "ComputerBase", "https://www.computerbase.de/thema/linux/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://holarse.de/rss.xml", "HOLARSE", "https://holarse.de/", "%a, %d %b %Y %H:%M:%S %z"]],
-            "videos": [["https://www.youtube.com/feeds/videos.xml?channel_id=UCHZyqB9qHGGGw5QeRVEbQDg", "Linux Guides DE", "https://www.youtube.com/channel/UCHZyqB9qHGGGw5QeRVEbQDg/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCbvvtG9I_hrfSqT9PfXFXtw", "MichlFranken", "https://www.youtube.com/@MichlFranken/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UC1FC90ObOrYdfsPposnbbMQ", "So'n Typ im Internet", "https://www.youtube.com/@SonTypimInternet/videos", "%Y-%m-%dT%H:%M:%S%z"]],
-            "more": [["https://www.howtoforge.de/feed/", "HowtoForge", "https://www.howtoforge.de/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://linux-content.org/feed/", "Linux Content", "https://linux-content.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://netzpalaver.de/feed/", "Netzpalaver", "https://netzpalaver.de/", "%a, %d %b %Y %H:%M:%S %z"]]
-        }
-    },
-    "fr": {
-        "lang": "fr",
-        "langFull": "Français",
-        "websiteDesc": "Agrégateur de nouvelles Linux/open source sans Javascript.",
-        "entries": {
-            "news": [["https://linuxfr.org/news.atom", "LinuxFr.org", "https://linuxfr.org/", "%Y-%m-%dT%H:%M:%S%z"]],
-            "videos": [["https://www.youtube.com/feeds/videos.xml?channel_id=UCs_AZuYXi6NA9tkdbhjItHQ", "xavki", "https://www.youtube.com/channel/UCs_AZuYXi6NA9tkdbhjItHQ/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCq6OWb0pyhv5qPtCINJgdxA", "LinuxInFrench", "https://www.youtube.com/channel/UCq6OWb0pyhv5qPtCINJgdxA/videos", "%Y-%m-%dT%H:%M:%S%z"]],
-            "more": [["https://www.numetopia.fr/feed/", "Numétopia", "https://www.numetopia.fr/", "%a, %d %b %Y %H:%M:%S %z"]]
-        }
-    },
-    "pt": {
-        "lang": "pt",
-        "langFull": "Português",
-        "websiteDesc": "Agregador de notícias sem Javascript Linux/ fonte aberta",
-        "entries": {
-            "news": [["https://sempreupdate.com.br/feed/", "SempreUpdate", "https://sempreupdate.com.br/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://livreeaberto.com/artigos.rss", "é Livre e Aberto", "https://livreeaberto.com/", "%a, %d %b %Y %H:%M:%S %z"]],
-            "videos": [["https://www.youtube.com/feeds/videos.xml?channel_id=UCEf5U1dB5a2e2S-XUlnhxSA", "Diolinux (Videos)", "https://www.youtube.com/@Diolinux/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UC-As6gR1nl8nxcyJck20u3w", "Zer01TI", "https://www.youtube.com/@Zer01TI/videos", "%Y-%m-%dT%H:%M:%S%z"]],
-            "more": [["https://diolinux.com.br/feed", "Diolinux", "https://diolinux.com.br/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.edivaldobrito.com.br/feed/", "Blog do Edivaldo", "https://www.edivaldobrito.com.br/", "%a, %d %b %Y %H:%M:%S %z"]]
-        }
-    },
-    "jp": {
-        "lang": "jp",
-        "langFull": "日本語",
-        "websiteDesc": "JavaScriptを使用しないLinuxおよびフリーソフトウェアニュースアグリゲーター",
-        "entries": {
-            "news": [["https://joho-todai.com/pinterest-rss/", "Joho no Todai", "https://joho-todai.com/", "%a, %d %b %Y %H:%M:%S %Z"]],
-            "videos": [],
-            "more": []
-        }
-    }
-}
+with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "feeds.json"), encoding="utf-8") as f:
+    strings = json.load(f)
+# Cada feed pasa a tupla (url, nombre, web)
+for _lang in strings.values():
+    for _section, _feeds in _lang["entries"].items():
+        _lang["entries"][_section] = [(x["url"], x["name"], x["home"]) for x in _feeds]
 
 # Si OUTPUT_DIR está definido se escribe en local y no se sube nada a S3
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
@@ -177,6 +21,7 @@ FEED_TIMEOUT = 60  # segundos por feed
 WORK_DIR = OUTPUT_DIR or "/tmp"
 
 SITE_NAME = "RS1 Linux & Open Source News"
+SITE_URL = "https://news.rs1.es"
 
 # Orden de los idiomas en la barra: los 3 primeros visibles, el resto en el menú "..."
 LANGUAGES = ["en", "es", "de", "fr", "pt", "jp"]
@@ -206,22 +51,21 @@ FOOTER = """<footer>
 
 # ---------- Feeds ----------
 
-def entryDate(entry, author, parseDate):
-    """Fecha de la entrada: la que normaliza feedparser y, si falta, el formato manual del feed."""
+def entryDate(entry, author):
+    """Fecha de la entrada normalizada por feedparser (UTC), o None si no tiene."""
     field = "updated" if author in ["DistroWatch", "LWN.net"] else "published"
     parsed = entry.get(field + "_parsed")
     if parsed:
         return datetime.datetime(*parsed[:6], tzinfo=datetime.timezone.utc)
-    return datetime.datetime.strptime(entry.get(field, ""), parseDate)
+    return None
 
-def parseFeed(url, author, homeURL, parseDate):
+def parseFeed(url, author, homeURL):
     entries = []
     d = feedparser.parse(url)
     for entry in d.entries:
-        try:
-            dt = entryDate(entry, author, parseDate)
-        except ValueError:
-            print("%s: invalid date in %s" % (author, entry.get("link")))
+        dt = entryDate(entry, author)
+        if dt is None:
+            print("%s: no date in %s" % (author, entry.get("link")))
             continue
         entries.append([entry.title, entry.link, dt.isoformat(), author, homeURL, dt.timestamp()])
     return entries
@@ -298,6 +142,14 @@ def createFilterBar(section, lang):
         + '</div>\n</div>'
     )
 
+def alternateLinks(section):
+    """Enlaces hreflang a la misma sección en cada idioma."""
+    links = "".join(
+        '<link rel="alternate" hreflang="%s" href="%s%s">\n' % (strings[code]["lang"], SITE_URL, sectionUrl(code, section))
+        for code in LANGUAGES
+    )
+    return links + '<link rel="alternate" hreflang="x-default" href="%s%s">\n' % (SITE_URL, sectionUrl("en", section))
+
 def createHeader(section, lang):
     return (
         '<!DOCTYPE html>\n'
@@ -306,6 +158,7 @@ def createHeader(section, lang):
         '<meta name="viewport" content="width=device-width, initial-scale=1.0">\n'
         '<meta name="description" content="%s">\n'
         '<title>%s</title><link rel="shortcut icon" href="/favicon.png" type="image/png">\n'
+        + alternateLinks(section) +
         '<link rel="stylesheet" href="/main.min.css">\n</head>\n'
         '<body>\n<div class="topbar">\n<div class="main-title">\n<a href="/"><h1>%s</h1></a>\n</div>\n'
         '<div class="topbar-links"><div class="topbar-link-item"><a href="/about.html">About</a>\n</div>\n</div>\n</div>\n'
