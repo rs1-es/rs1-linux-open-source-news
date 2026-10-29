@@ -342,6 +342,11 @@ def mainProcess(section, feedInfo, lang):
         receivedFeeds = [e for result in pool.map(parseFeedSafe, feedInfo) for e in result]
     print("- %s feeds parsed -" % section)
 
+    # Sin ninguna entrada (p. ej. corte de red) se conserva la página anterior en S3
+    if feedInfo and not receivedFeeds:
+        print("%s: no entries, page not updated" % path)
+        return False
+
     joinFeedSorted = limitFeeds(sortFeeds(receivedFeeds))
 
     os.makedirs(WORK_DIR + "/" + path, exist_ok=True)
@@ -350,11 +355,17 @@ def mainProcess(section, feedInfo, lang):
     print(path + "index.html saved")
     if not OUTPUT_DIR:
         uploadFileS3(path + "index.html")
+    return True
 
 def main():
+    failed = []
     for lang in LANGUAGES:
         for section in SECTIONS:
-            mainProcess(section, strings[lang]["entries"][section], lang)
+            if not mainProcess(section, strings[lang]["entries"][section], lang):
+                failed.append("%s/%s" % (lang, section))
+    # Falla al final, tras generar el resto, para que Lambda registre el error
+    if failed:
+        raise RuntimeError("Pages not updated: " + ", ".join(failed))
 
 if __name__ == "__main__":
     main()
