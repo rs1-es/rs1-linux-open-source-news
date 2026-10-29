@@ -25,8 +25,7 @@ strings = {
             ["https://linmob.net/feed.xml", "LINMOB.net", "https://linmob.net/", "%Y-%m-%dT%H:%M:%S%z"],
             ["https://www.linux-magazine.com/rss/feed/lmi_news", "Linux Magazine", "https://www.linux-magazine.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://fossforce.com/feed/", "FOSS Force", "https://fossforce.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://fullcirclemagazine.org/feed/", "Full Circle Magazine", "https://fullcirclemagazine.org/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://linuxgamingcentral.com/posts/index.xml", "Linux Gaming Central", "https://linuxgamingcentral.com/", "%a, %d %b %Y %H:%M:%S %z"],
+            ["https://fullcirclemagazine.org/index.xml", "Full Circle Magazine", "https://fullcirclemagazine.org/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://news.opensuse.org/feed.xml", "openSUSE News", "https://news.opensuse.org/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://www.omglinux.com/feed/", "OMG! Linux", "https://www.omglinux.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://planet.kde.org/index.xml", "Planet KDE", "https://planet.kde.org/", "%a, %d %b %Y %H:%M:%S %z"],
@@ -57,7 +56,6 @@ strings = {
             ["https://www.fosslinux.com/feed", "FOSS Linux", "https://www.fosslinux.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://linuxtldr.com/feed/", "Linux TLDR", "https://linuxtldr.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://trendoceans.com/feed/", "TREND OCEANS", "https://trendoceans.com/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www.linuxcapable.com/feed/", "LinuxCapable", "https://www.linuxcapable.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://www.cyberciti.com/atom/atom.xml", "nixCraft", "https://www.cyberciti.biz/", "%Y-%m-%dT%H:%M:%S%z"],
             ["https://www.linux.com/feed/", "Linux.com", "https://www.linux.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://linuxstans.com/feed/", "Linux Stans", "https://linuxstans.com/", "%a, %d %b %Y %H:%M:%S %z"],
@@ -72,7 +70,6 @@ strings = {
             ["https://www.howtoforge.com/feed.rss", "HowtoForge", "https://www.howtoforge.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://thisweek.gnome.org/index.xml", "This Week in GNOME", "https://thisweek.gnome.org/", "%a, %d %b %Y %H:%M:%S %Z"],
             ["https://ubuntu.com/blog/feed", "Ubuntu Blog", "https://ubuntu.com/blog", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://www-gem.bearblog.dev/feed/", "www-gem words", "https://www-gem.bearblog.dev/", "%Y-%m-%dT%H:%M:%S.%f%z"],
             ["https://linuxhint.com/feed/", "Linux Hint", "https://linuxhint.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://www.linuxuprising.com/feeds/posts/default", "Linux Uprising", "https://www.linuxuprising.com/", "%Y-%m-%dT%H:%M:%S.%f%z"],
             ["https://boilingsteam.com/feed/", "Boiling Steam", "https://boilingsteam.com/", "%a, %d %b %Y %H:%M:%S %z"]]
@@ -96,7 +93,6 @@ strings = {
             ["https://feeds.feedburner.com/ubunlog", "Ubunlog", "https://ubunlog.com/", "%a, %d %b %Y %H:%M:%S %z"]],
             "videos": [["https://odysee.com/$/rss/@manosymaquinasentrevideos:6", "Manos y Máquinas Entre Vídeos", "https://odysee.com/@manosymaquinasentrevideos:6", "%a, %d %b %Y %H:%M:%S %Z"],
             ["https://fediverse.tv/feeds/videos.xml?videoChannelId=19129", "Atareao (Vídeos)", "https://fediverse.tv/c/atareao/videos", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://fediverse.tv/feeds/videos.xml?accountId=132878", "MAINKIVI (Vídeos)", "https://fediverse.tv/a/mainkivi/videos", "%a, %d %b %Y %H:%M:%S %Z"],
             ["https://fediverse.tv/feeds/videos.xml?videoChannelId=22590", "Dani Sánchez", "https://fediverse.tv/c/danisanchez.net/videos", "%a, %d %b %Y %H:%M:%S %Z"],
             ["https://www.youtube.com/feeds/videos.xml?channel_id=UC6ImDlcMZukA-pqtIaXqbdA", "Cumpi Linux", "https://cumpi.ga/", "%Y-%m-%dT%H:%M:%S%z"],
             ["https://www.youtube.com/feeds/videos.xml?channel_id=UCl8XUDjAOLc7GNKcDp9Nepg", "Locos por Linux", "https://www.youtube.com/@LocosporLinux/videos", "%Y-%m-%dT%H:%M:%S%z"],
@@ -107,20 +103,16 @@ strings = {
             "more": [["https://voidnull.es/rss/", "voidNull", "https://voidnull.es/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://www.ochobitshacenunbyte.com/feed/", "ochobitshacenunbyte", "https://www.ochobitshacenunbyte.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://podcastlinux.com/feed", "Podcast Linux", "https://podcastlinux.com/", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://mainkivi.info/wordpress/blog/feed/", "MAINKIVI", "https://mainkivi.info/wordpress/blog/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://ugeek.github.io/feed.xml", "Blog Podcast uGeek", "https://ugeek.github.io/", "%a, %d %b %Y %H:%M:%S %Z"],
             ["https://elblogdelazaro.org/index.xml", "El Blog de Lázaro", "https://elblogdelazaro.org/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://atareao.es/feed/", "Atareao", "https://atareao.es/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://salmorejogeek.com/feed/", "Salmorejo Geek", "https://salmorejogeek.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://elbinario.net/feed/", "Elbinario", "https://elbinario.net/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://ubuntuperonista.blogspot.com/feeds/posts/default", "Ubuntu Peronista", "https://ubuntuperonista.blogspot.com/", "%Y-%m-%dT%H:%M:%S.%f%z"],
             ["https://martinezmartinez.eu/feed/", "Blog de informática", "https://martinezmartinez.eu/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://feeds.feedburner.com/geeklandlinux", "geekland", "https://geekland.eu/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://myblog.clonbg.es/feedClonbg_es.xml", "Blog de Clonbg", "https://myblog.clonbg.es/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://cambiatealinux.com/rss", "Cambiate a Linux", "https://cambiatealinux.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://www.bujarra.com/feed/", "Blog Bujarra.com", "https://www.bujarra.com/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://56k.es/feed/", "56K", "https://56k.es/", "%a, %d %b %Y %H:%M:%S %z"],
-            ["https://c3po.website/rss/", "Blog de C3PO", "https://c3po.website/", "%a, %d %b %Y %H:%M:%S %z"],
             ["http://feeds.feedburner.com/UnBrutoConDebian", "Un bruto con Debian", "https://unbrutocondebian.blogspot.com/", "%Y-%m-%dT%H:%M:%S.%f%z"]]
         }
     },
@@ -147,12 +139,9 @@ strings = {
         "langFull": "Français",
         "websiteDesc": "Agrégateur de nouvelles Linux/open source sans Javascript.",
         "entries": {
-            "news": [["https://www.toolinux.com/spip.php?page=backend", "TOOLinux", "https://www.toolinux.com/", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://linuxfr.org/news.atom", "LinuxFr.org", "https://linuxfr.org/", "%Y-%m-%dT%H:%M:%S%z"]],
+            "news": [["https://linuxfr.org/news.atom", "LinuxFr.org", "https://linuxfr.org/", "%Y-%m-%dT%H:%M:%S%z"]],
             "videos": [["https://www.youtube.com/feeds/videos.xml?channel_id=UCs_AZuYXi6NA9tkdbhjItHQ", "xavki", "https://www.youtube.com/channel/UCs_AZuYXi6NA9tkdbhjItHQ/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCq6OWb0pyhv5qPtCINJgdxA", "LinuxInFrench", "https://www.youtube.com/channel/UCq6OWb0pyhv5qPtCINJgdxA/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UC5M4fqmqLNJaBey0W_ylCSA", "Actualia", "https://www.youtube.com/@Actualia66/videos", "%Y-%m-%dT%H:%M:%S%z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UC7VqJVFvk75-B0uKg4MWfpw", "Cardiac TuX", "https://www.youtube.com/@Cardiacman/videos", "%Y-%m-%dT%H:%M:%S%z"]],
+            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCq6OWb0pyhv5qPtCINJgdxA", "LinuxInFrench", "https://www.youtube.com/channel/UCq6OWb0pyhv5qPtCINJgdxA/videos", "%Y-%m-%dT%H:%M:%S%z"]],
             "more": [["https://www.numetopia.fr/feed/", "Numétopia", "https://www.numetopia.fr/", "%a, %d %b %Y %H:%M:%S %z"]]
         }
     },
@@ -163,8 +152,7 @@ strings = {
         "entries": {
             "news": [["https://sempreupdate.com.br/feed/", "SempreUpdate", "https://sempreupdate.com.br/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://livreeaberto.com/artigos.rss", "é Livre e Aberto", "https://livreeaberto.com/", "%a, %d %b %Y %H:%M:%S %z"]],
-            "videos": [["https://odysee.com/$/rss/@livreeaberto:f", "é Livre e Aberto (Videos)", "https://odysee.com/@livreeaberto:f", "%a, %d %b %Y %H:%M:%S %Z"],
-            ["https://www.youtube.com/feeds/videos.xml?channel_id=UCEf5U1dB5a2e2S-XUlnhxSA", "Diolinux (Videos)", "https://www.youtube.com/@Diolinux/videos", "%Y-%m-%dT%H:%M:%S%z"],
+            "videos": [["https://www.youtube.com/feeds/videos.xml?channel_id=UCEf5U1dB5a2e2S-XUlnhxSA", "Diolinux (Videos)", "https://www.youtube.com/@Diolinux/videos", "%Y-%m-%dT%H:%M:%S%z"],
             ["https://www.youtube.com/feeds/videos.xml?channel_id=UC-As6gR1nl8nxcyJck20u3w", "Zer01TI", "https://www.youtube.com/@Zer01TI/videos", "%Y-%m-%dT%H:%M:%S%z"]],
             "more": [["https://diolinux.com.br/feed", "Diolinux", "https://diolinux.com.br/", "%a, %d %b %Y %H:%M:%S %z"],
             ["https://www.edivaldobrito.com.br/feed/", "Blog do Edivaldo", "https://www.edivaldobrito.com.br/", "%a, %d %b %Y %H:%M:%S %z"]]
@@ -185,6 +173,7 @@ strings = {
 # Si OUTPUT_DIR está definido se escribe en local y no se sube nada a S3
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
 BUCKET = "news.rs1.es"
+FEED_TIMEOUT = 60  # segundos por feed
 WORK_DIR = OUTPUT_DIR or "/tmp"
 
 SITE_NAME = "RS1 Linux & Open Source News"
@@ -240,12 +229,22 @@ def parseFeed(url, author, homeURL, parseDate):
 def parseFeedSafe(feed):
     """Descarga un feed con timeout; un feed roto no debe afectar al resto."""
     try:
-        return func_timeout.func_timeout(10, parseFeed, args=tuple(feed))
+        return func_timeout.func_timeout(FEED_TIMEOUT, parseFeed, args=tuple(feed))
     except func_timeout.FunctionTimedOut:
         print("%s: timeout" % feed[1])
     except Exception as e:
         print("%s: %s" % (feed[1], e))
     return []
+
+def fetchAll():
+    """Descarga todos los feeds de todos los idiomas a la vez. Devuelve {url: entradas}."""
+    feeds = [f for lang in LANGUAGES for section in SECTIONS for f in strings[lang]["entries"][section]]
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        results = {f[0]: entries for f, entries in zip(feeds, pool.map(parseFeedSafe, feeds))}
+    empty = [f[1] for f in feeds if not results[f[0]]]
+    if empty:
+        print("Feeds without entries (%d): %s" % (len(empty), ", ".join(empty)))
+    return results
 
 def sortFeeds(feed):
     return sorted(feed, key=lambda entry: entry[5], reverse=True)
@@ -255,7 +254,7 @@ def limitFeeds(feed):
 
 def uploadFileS3(localFile):
     import boto3
-    boto3.resource('s3').Bucket(BUCKET).upload_file(WORK_DIR + '/' + localFile, localFile, ExtraArgs={'ContentType': 'text/html'})
+    boto3.resource('s3').Bucket(BUCKET).upload_file(WORK_DIR + '/' + localFile, localFile, ExtraArgs={'ContentType': 'text/html', 'CacheControl': 'public, max-age=300'})
 
 
 # ---------- HTML ----------
@@ -336,11 +335,9 @@ def createPage(file, entries, section, lang):
 
 # ---------- Proceso principal ----------
 
-def mainProcess(section, feedInfo, lang):
+def mainProcess(section, feedInfo, lang, fetched):
     path = ("" if lang == "en" else lang + "/") + SECTIONS[section]["dir"]
-    with ThreadPoolExecutor(max_workers=16) as pool:
-        receivedFeeds = [e for result in pool.map(parseFeedSafe, feedInfo) for e in result]
-    print("- %s feeds parsed -" % section)
+    receivedFeeds = [e for feed in feedInfo for e in fetched[feed[0]]]
 
     # Sin ninguna entrada (p. ej. corte de red) se conserva la página anterior en S3
     if feedInfo and not receivedFeeds:
@@ -358,10 +355,11 @@ def mainProcess(section, feedInfo, lang):
     return True
 
 def main():
+    fetched = fetchAll()
     failed = []
     for lang in LANGUAGES:
         for section in SECTIONS:
-            if not mainProcess(section, strings[lang]["entries"][section], lang):
+            if not mainProcess(section, strings[lang]["entries"][section], lang, fetched):
                 failed.append("%s/%s" % (lang, section))
     # Falla al final, tras generar el resto, para que Lambda registre el error
     if failed:

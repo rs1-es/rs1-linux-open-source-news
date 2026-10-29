@@ -24,5 +24,5 @@ provider:
 functions:
   main:
     image: <ACCOUNT_ID>.dkr.ecr.eu-west-1.amazonaws.com/news-rs1-es@sha256:0132948806c46849a905fe3c93ba8d5f506b1578a148fb372966ef976d72a1f0
-    memorySize: 512
-    timeout: 180
+    memorySize: 1024
+    timeout: 300
