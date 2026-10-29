@@ -1,6 +1,7 @@
 #!/bin/bash
 # Construye la imagen, la sube a ECR, actualiza el digest en serverless.yml
-# y despliega. Con --no-deploy se detiene antes de "serverless deploy".
+# y despliega. Con --no-deploy se detiene antes de subir nada más (estáticos y
+# "serverless deploy").
 set -euo pipefail
 cd "$(dirname "$0")"
 
@@ -27,5 +28,8 @@ echo "Digest: $DIGEST"
 sed -i -E "s#^( *image: ).*#\1$REGISTRY/$REPO@$DIGEST#" serverless.yml
 
 if [ "${1:-}" != "--no-deploy" ]; then
+    # Archivos estáticos. Sin --delete y sin las páginas que genera la Lambda
+    aws s3 sync ../public s3://news.rs1.es \
+        --exclude "index.html" --exclude "*/index.html"
     serverless deploy
 fi

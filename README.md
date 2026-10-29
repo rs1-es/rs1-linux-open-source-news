@@ -22,7 +22,7 @@ OUTPUT_DIR=../../../out python news_parser.py
 
 ### Deploy
 
-Run `container/deploy.sh`: it builds the image with podman, pushes it to ECR, writes the new digest into `container/serverless.yml` and runs `serverless deploy` (use `--no-deploy` to skip the last step). Requires the AWS CLI with a valid session.
+Run `container/deploy.sh`: it builds the image with podman, pushes it to ECR, writes the new digest into `container/serverless.yml`, syncs `public/` to S3 and runs `serverless deploy` (use `--no-deploy` to skip the last two steps). Requires the AWS CLI with a valid session.
 
 ### Contribute
 
