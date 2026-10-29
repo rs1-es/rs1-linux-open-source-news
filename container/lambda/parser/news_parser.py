@@ -1,9 +1,10 @@
 import feedparser
 import datetime
+import html
 import os
 import pytz
 import func_timeout
-import boto3
+from concurrent.futures import ThreadPoolExecutor
 
 strings = {
     "en": {
@@ -181,7 +182,10 @@ strings = {
     }
 }
 
-s3 = boto3.resource('s3')
+# Si OUTPUT_DIR está definido se escribe en local y no se sube nada a S3
+OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
+BUCKET = "news.rs1.es"
+WORK_DIR = OUTPUT_DIR or "/tmp"
 
 SITE_NAME = "RS1 Linux & Open Source News"
 
@@ -209,28 +213,39 @@ FOOTER = """<footer>
 </body>
 </html>""" % SITE_NAME
 
-s3 = boto3.resource('s3')
 
 
 # ---------- Feeds ----------
 
-def parseFeed(url, author, homeURL, parseDate, globalFeed):
-    d = feedparser.parse(url)
-    for entry in d.entries:
-        if author in ["DistroWatch", "LWN.net"]:
-            entry.published = entry.updated
-        try:
-            dt = datetime.datetime.strptime(entry.published, parseDate)
-        except ValueError:
-            print(entry.published + " does not follow " + parseDate)
-            continue
-        entry.published = dt.isoformat()
-        globalFeed.append([entry.title, entry.link, entry.published, author, homeURL, dt.timestamp()])
+def entryDate(entry, author, parseDate):
+    """Fecha de la entrada: la que normaliza feedparser y, si falta, el formato manual del feed."""
+    field = "updated" if author in ["DistroWatch", "LWN.net"] else "published"
+    parsed = entry.get(field + "_parsed")
+    if parsed:
+        return datetime.datetime(*parsed[:6], tzinfo=datetime.timezone.utc)
+    return datetime.datetime.strptime(entry.get(field, ""), parseDate)
 
-def testParse(url):
+def parseFeed(url, author, homeURL, parseDate):
+    entries = []
     d = feedparser.parse(url)
     for entry in d.entries:
-        print(entry.title, entry.link, entry.published)
+        try:
+            dt = entryDate(entry, author, parseDate)
+        except ValueError:
+            print("%s: invalid date in %s" % (author, entry.get("link")))
+            continue
+        entries.append([entry.title, entry.link, dt.isoformat(), author, homeURL, dt.timestamp()])
+    return entries
+
+def parseFeedSafe(feed):
+    """Descarga un feed con timeout; un feed roto no debe afectar al resto."""
+    try:
+        return func_timeout.func_timeout(10, parseFeed, args=tuple(feed))
+    except func_timeout.FunctionTimedOut:
+        print("%s: timeout" % feed[1])
+    except Exception as e:
+        print("%s: %s" % (feed[1], e))
+    return []
 
 def sortFeeds(feed):
     return sorted(feed, key=lambda entry: entry[5], reverse=True)
@@ -239,7 +254,8 @@ def limitFeeds(feed):
     return feed[0:150]
 
 def uploadFileS3(localFile):
-    s3.Bucket('news.rs1.es').upload_file('/tmp/' + localFile, localFile, ExtraArgs={'ContentType': 'text/html'})
+    import boto3
+    boto3.resource('s3').Bucket(BUCKET).upload_file(WORK_DIR + '/' + localFile, localFile, ExtraArgs={'ContentType': 'text/html'})
 
 
 # ---------- HTML ----------
@@ -303,11 +319,11 @@ def createEntries(file, entries):
         tz = pytz.timezone("UTC")
         dtentry = dtentry.astimezone(tz)
         file.write("<div class=\"post-item\">\n")
-        file.write("<a target=\"_blank\" href=\"%s\">\n" %entry[1])
-        file.write("<h2>%s</h2>\n" %entry[0])
+        file.write("<a target=\"_blank\" rel=\"noopener\" href=\"%s\">\n" % html.escape(entry[1], quote=True))
+        file.write("<h2>%s</h2>\n" % html.escape(entry[0]))
         file.write("</a>\n")
-        file.write("<a target=\"_blank\" href=\"%s\">%s</a>\n" %(entry[4], entry[3]))
-        file.write("<time datetime=\"%s\">%s</time>\n" %(entry[2], dtentry.strftime('%a, %d %b %Y %H:%M')))
+        file.write("<a target=\"_blank\" rel=\"noopener\" href=\"%s\">%s</a>\n" % (html.escape(entry[4], quote=True), html.escape(entry[3])))
+        file.write("<time datetime=\"%s\">%s</time>\n" % (entry[2], dtentry.strftime('%a, %d %b %Y %H:%M')))
         file.write("</div>\n")
     file.write("</div>\n")
 
@@ -322,26 +338,23 @@ def createPage(file, entries, section, lang):
 
 def mainProcess(section, feedInfo, lang):
     path = ("" if lang == "en" else lang + "/") + SECTIONS[section]["dir"]
-    receivedFeeds = []
-    for feed in feedInfo:
-        print(feed[1])
-        try:
-            func_timeout.func_timeout(10, parseFeed, args=(feed[0], feed[1], feed[2], feed[3], receivedFeeds))
-        except func_timeout.FunctionTimedOut:
-            pass
+    with ThreadPoolExecutor(max_workers=16) as pool:
+        receivedFeeds = [e for result in pool.map(parseFeedSafe, feedInfo) for e in result]
     print("- %s feeds parsed -" % section)
 
     joinFeedSorted = limitFeeds(sortFeeds(receivedFeeds))
 
-    os.makedirs("/tmp/" + path, exist_ok=True)
-    with open("/tmp/" + path + "index.html", "w") as htmlFile:
+    os.makedirs(WORK_DIR + "/" + path, exist_ok=True)
+    with open(WORK_DIR + "/" + path + "index.html", "w") as htmlFile:
         createPage(htmlFile, joinFeedSorted, section, lang)
     print(path + "index.html saved")
-    uploadFileS3(path + "index.html")
+    if not OUTPUT_DIR:
+        uploadFileS3(path + "index.html")
 
 def main():
     for lang in LANGUAGES:
         for section in SECTIONS:
             mainProcess(section, strings[lang]["entries"][section], lang)
 
-main()
+if __name__ == "__main__":
+    main()

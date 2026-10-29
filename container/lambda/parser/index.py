@@ -1,4 +1,4 @@
-import os
+import news_parser
 
 def handler(event, context):
-    os.system("python3.9 parser.py")
+    news_parser.main()

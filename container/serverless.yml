@@ -7,7 +7,7 @@ custom:
 
 provider:
   name: aws
-  runtime: python3.9
+  runtime: python3.12
   stage: prod
   region: eu-west-1
   tags:
