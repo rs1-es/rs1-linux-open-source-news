@@ -1,35 +1,59 @@
 #!/bin/bash
-# Construye la imagen, la sube a ECR, actualiza el digest en serverless.yml
-# y despliega. Con --no-deploy se detiene antes de subir nada más (estáticos y
-# "serverless deploy").
+# Empaqueta la Lambda en un zip y la despliega (crea el rol y la función si no
+# existen). Con --no-deploy sólo genera function.zip.
 set -euo pipefail
 cd "$(dirname "$0")"
 
 REGION=eu-west-1
-REPO=news-rs1-es
+FUNCTION=news-rs1-es-parser
+ROLE=news-rs1-es-parser
+BUCKET=news.rs1.es
+RUNTIME=python3.12
+MEMORY=1024
+TIMEOUT=300
+
+rm -rf build function.zip
+pip install -q --no-cache-dir --target build -r lambda/parser/requirements.txt
+cp lambda/parser/index.py lambda/parser/news_parser.py lambda/parser/feeds.json build/
+find build -name __pycache__ -prune -exec rm -rf {} +
+(cd build && zip -qr ../function.zip .)
+echo "function.zip: $(du -h function.zip | cut -f1)"
+
+[ "${1:-}" = "--no-deploy" ] && exit 0
+
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
-REGISTRY=$ACCOUNT.dkr.ecr.$REGION.amazonaws.com
+ROLE_ARN=arn:aws:iam::$ACCOUNT:role/$ROLE
 
-aws ecr get-login-password --region $REGION | podman login --username AWS --password-stdin $REGISTRY
-
-# Crea el repositorio si no existe
-aws ecr describe-repositories --region $REGION --repository-names $REPO >/dev/null 2>&1 ||
-    aws ecr create-repository --region $REGION --repository-name $REPO --image-scanning-configuration scanOnPush=true
-
-podman build -t $REPO .
-podman tag $REPO:latest $REGISTRY/$REPO:latest
-podman push $REGISTRY/$REPO:latest
-
-# Digest de lo que acaba de quedar en ECR
-DIGEST=$(aws ecr describe-images --region $REGION --repository-name $REPO \
-    --image-ids imageTag=latest --query 'imageDetails[0].imageDigest' --output text)
-echo "Digest: $DIGEST"
-
-sed -i -E "s#^( *image: ).*#\1$REGISTRY/$REPO@$DIGEST#" serverless.yml
-
-if [ "${1:-}" != "--no-deploy" ]; then
-    # Archivos estáticos. Sin --delete y sin las páginas que genera la Lambda
-    aws s3 sync ../public s3://news.rs1.es \
-        --exclude "index.html" --exclude "*/index.html"
-    serverless deploy
+# Rol de ejecución: logs y acceso al bucket
+if ! aws iam get-role --role-name $ROLE >/dev/null 2>&1; then
+    aws iam create-role --role-name $ROLE --assume-role-policy-document '{
+      "Version": "2012-10-17",
+      "Statement": [{"Effect": "Allow", "Principal": {"Service": "lambda.amazonaws.com"}, "Action": "sts:AssumeRole"}]
+    }' >/dev/null
+    aws iam attach-role-policy --role-name $ROLE \
+        --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+    aws iam put-role-policy --role-name $ROLE --policy-name s3-bucket --policy-document '{
+      "Version": "2012-10-17",
+      "Statement": [{"Effect": "Allow", "Action": ["s3:GetObject", "s3:PutObject", "s3:DeleteObject"],
+                     "Resource": "arn:aws:s3:::'$BUCKET'/*"}]
+    }'
+    sleep 10  # propagación del rol
 fi
+
+if aws lambda get-function --region $REGION --function-name $FUNCTION >/dev/null 2>&1; then
+    aws lambda update-function-code --region $REGION --function-name $FUNCTION \
+        --zip-file fileb://function.zip >/dev/null
+    aws lambda wait function-updated --region $REGION --function-name $FUNCTION
+    aws lambda update-function-configuration --region $REGION --function-name $FUNCTION \
+        --runtime $RUNTIME --memory-size $MEMORY --timeout $TIMEOUT >/dev/null
+else
+    aws lambda create-function --region $REGION --function-name $FUNCTION \
+        --runtime $RUNTIME --handler index.handler --role $ROLE_ARN \
+        --memory-size $MEMORY --timeout $TIMEOUT --zip-file fileb://function.zip \
+        --tags project=news-rs1-es >/dev/null
+fi
+aws lambda wait function-updated --region $REGION --function-name $FUNCTION
+
+# Archivos estáticos. Sin --delete y sin las páginas que genera la Lambda
+aws s3 sync ../public s3://$BUCKET --exclude "index.html" --exclude "*/index.html"
+echo "Desplegado: $FUNCTION"

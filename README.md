@@ -2,7 +2,7 @@
 
 Javascript-free Linux/open source news aggregator.
 
-This is the source code of https://news.rs1.es. A Python script parses feeds (RSS/Atom/RDF), joins them, sorts them by date and generates one static page per language and section (news, videos, more). It runs as an AWS Lambda function (container image) that uploads the pages to the S3 bucket serving the site.
+This is the source code of https://news.rs1.es. A Python script parses feeds (RSS/Atom/RDF), joins them, sorts them by date and generates one static page per language and section (news, videos, more). It runs as an AWS Lambda function (zip package, Python 3.12) that uploads the pages to the S3 bucket serving the site.
 
 ### Layout
 
@@ -10,7 +10,7 @@ This is the source code of https://news.rs1.es. A Python script parses feeds (RS
 - `container/lambda/parser/feeds.json`: feeds per language and section (`news`, `videos`, `more`).
 - `container/lambda/parser/requirements.txt`: pinned dependencies.
 - `container/lambda/parser/index.py`: Lambda handler.
-- `container/Dockerfile`, `container/serverless.yml`, `container/deploy.sh`: image build and deployment.
+- `container/deploy.sh`: builds the zip package and deploys it.
 - `public/`: static files (CSS, about, 404, sitemap).
 
 ### Run locally
@@ -24,7 +24,7 @@ OUTPUT_DIR=../../../out python news_parser.py
 
 ### Deploy
 
-Run `container/deploy.sh`: it builds the image with podman, pushes it to ECR, writes the new digest into `container/serverless.yml`, syncs `public/` to S3 and runs `serverless deploy` (use `--no-deploy` to skip the last two steps). Requires the AWS CLI with a valid session.
+Run `container/deploy.sh`: it installs the dependencies, builds `function.zip`, creates the IAM role and the Lambda function if they don't exist (or updates their code and configuration), and syncs `public/` to S3. Use `--no-deploy` to only build the zip. Requires the AWS CLI with a valid session. The schedule trigger is configured in the AWS console and must point to the function `news-rs1-es-parser`.
 
 ### Contribute
 

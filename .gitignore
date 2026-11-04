@@ -8,3 +8,5 @@ public/index.html
 container/.serverless/
 __pycache__/
 out/
+container/build/
+container/function.zip
