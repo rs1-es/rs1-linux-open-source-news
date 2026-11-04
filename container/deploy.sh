@@ -54,6 +54,8 @@ else
 fi
 aws lambda wait function-updated --region $REGION --function-name $FUNCTION
 
-# Archivos estáticos. Sin --delete y sin las páginas que genera la Lambda
+# Archivos estáticos. La lista de feeds de about.html se regenera desde feeds.json.
+# Sin --delete y sin las páginas que genera la Lambda
+python3 build_about.py
 aws s3 sync ../public s3://$BUCKET --exclude "index.html" --exclude "*/index.html"
 echo "Desplegado: $FUNCTION"

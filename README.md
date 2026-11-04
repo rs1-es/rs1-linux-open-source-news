@@ -24,7 +24,7 @@ OUTPUT_DIR=../../../out python news_parser.py
 
 ### Deploy
 
-Run `container/deploy.sh`: it installs the dependencies, builds `function.zip`, creates the IAM role and the Lambda function if they don't exist (or updates their code and configuration), and syncs `public/` to S3. Use `--no-deploy` to only build the zip. Requires the AWS CLI with a valid session. The schedule trigger is configured in the AWS console and must point to the function `news-rs1-es-parser`.
+Run `container/deploy.sh`: it installs the dependencies, builds `function.zip`, creates the IAM role and the Lambda function if they don't exist (or updates their code and configuration), regenerates the feed list of `public/about.html` from `feeds.json` (`container/build_about.py`) and syncs `public/` to S3. Use `--no-deploy` to only build the zip. Requires the AWS CLI with a valid session. The schedule trigger is configured in the AWS console and must point to the function `news-rs1-es-parser`.
 
 ### Contribute
 
