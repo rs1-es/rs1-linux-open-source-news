@@ -62,6 +62,9 @@ def entryDate(entry, author):
 def parseFeed(url, author, homeURL):
     entries = []
     d = feedparser.parse(url)
+    if not d.entries:
+        # Motivo del fallo: código HTTP y excepción de feedparser (red, XML inválido...)
+        print("%s: no entries (HTTP %s, %s)" % (author, d.get("status", "-"), d.get("bozo_exception", "no error")))
     for entry in d.entries:
         dt = entryDate(entry, author)
         if dt is None:
