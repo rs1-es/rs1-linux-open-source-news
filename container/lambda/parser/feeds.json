@@ -24,7 +24,6 @@
         {"url": "https://planet.kde.org/index.xml", "name": "Planet KDE", "home": "https://planet.kde.org/"},
         {"url": "https://lwn.net/headlines/rss", "name": "LWN.net", "home": "https://lwn.net/"},
         {"url": "https://planet.debian.org/rss20.xml", "name": "Planet Debian", "home": "https://planet.debian.org/"},
-        {"url": "https://tuxphones.com/rss/", "name": "TuxPhones", "home": "https://tuxphones.com/"},
         {"url": "https://www.linuxinsider.com/rss-feed", "name": "LinuxInsider", "home": "https://www.linuxinsider.com/"},
         {"url": "https://joho-todai.com/en/rss/", "name": "Joho no Todai (English)", "home": "https://joho-todai.com/"}
       ],
@@ -37,8 +36,6 @@
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC5UAwBUum7CPN5buc-_N1Fw", "name": "The Linux Experiment", "home": "https://tilvids.com/c/thelinuxexperiment_channel/videos"},
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCMePQAfCxotiG_2B5qYv4aQ", "name": "Linux User Space", "home": "https://tilvids.com/a/linuxuserspace/videos"},
         {"url": "https://framatube.org/feeds/videos.xml?accountId=8178", "name": "Free Software Foundation", "home": "https://framatube.org/a/fsf/videos"},
-        {"url": "https://video.retroedge.tech/feeds/videos.xml?videoChannelId=4", "name": "RetroEdge.Tech", "home": "https://retroedge.tech/"},
-        {"url": "https://tilvids.com/feeds/videos.xml?videoChannelId=71", "name": "Linux Lounge", "home": "https://tilvids.com/c/linux_lounge/videos"},
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCxQKHvKbmSzGMvUrVtJYnUA", "name": "Learn Linux TV", "home": "https://www.learnlinux.tv/"},
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCoryWpk4QVYKFCJul9KBdyw", "name": "Switched to Linux", "home": "https://switchedtolinux.com/"},
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCylGUf9BvQooEFjgdNudoQg", "name": "The Linux Cast", "home": "https://odysee.com/@thelinuxcast:4"},
@@ -51,15 +48,11 @@
       "more": [
         {"url": "https://www.linuxlinks.com/feed/", "name": "LinuxLinks", "home": "https://www.linuxlinks.com/"},
         {"url": "https://www.fosslinux.com/feed", "name": "FOSS Linux", "home": "https://www.fosslinux.com/"},
-        {"url": "https://linuxtldr.com/feed/", "name": "Linux TLDR", "home": "https://linuxtldr.com/"},
-        {"url": "https://trendoceans.com/feed/", "name": "TREND OCEANS", "home": "https://trendoceans.com/"},
-        {"url": "https://www.cyberciti.com/atom/atom.xml", "name": "nixCraft", "home": "https://www.cyberciti.biz/"},
         {"url": "https://www.linux.com/feed/", "name": "Linux.com", "home": "https://www.linux.com/"},
         {"url": "https://linuxstans.com/feed/", "name": "Linux Stans", "home": "https://linuxstans.com/"},
         {"url": "https://www.ubuntupit.com/feed/", "name": "UbuntuPIT", "home": "https://www.ubuntupit.com/"},
         {"url": "https://feeds.feedburner.com/UbuntuhandbookNewsTutorialsHowtosForUbuntuLinux", "name": "UbuntuHandbook", "home": "https://ubuntuhandbook.org/"},
         {"url": "https://www.tecmint.com/feed/", "name": "Tecmint", "home": "https://www.tecmint.com/"},
-        {"url": "https://opensource.com/feed", "name": "Opensource.com", "home": "https://opensource.com/"},
         {"url": "https://www.redhat.com/sysadmin/rss.xml", "name": "Red Hat - Enable Sysadmin", "home": "https://www.redhat.com/sysadmin/"},
         {"url": "https://feeds.feedburner.com/Ostechnix", "name": "OSTechNix", "home": "https://ostechnix.com/"},
         {"url": "https://fedoramagazine.org/feed/", "name": "Fedora Magazine", "home": "https://fedoramagazine.org/"},
@@ -68,7 +61,6 @@
         {"url": "https://thisweek.gnome.org/index.xml", "name": "This Week in GNOME", "home": "https://thisweek.gnome.org/"},
         {"url": "https://ubuntu.com/blog/feed", "name": "Ubuntu Blog", "home": "https://ubuntu.com/blog"},
         {"url": "https://linuxhint.com/feed/", "name": "Linux Hint", "home": "https://linuxhint.com/"},
-        {"url": "https://www.linuxuprising.com/feeds/posts/default", "name": "Linux Uprising", "home": "https://www.linuxuprising.com/"},
         {"url": "https://boilingsteam.com/feed/", "name": "Boiling Steam", "home": "https://boilingsteam.com/"}
       ]
     }
@@ -92,29 +84,19 @@
         {"url": "https://feeds.feedburner.com/ubunlog", "name": "Ubunlog", "home": "https://ubunlog.com/"}
       ],
       "videos": [
-        {"url": "https://odysee.com/$/rss/@manosymaquinasentrevideos:6", "name": "Manos y Máquinas Entre Vídeos", "home": "https://odysee.com/@manosymaquinasentrevideos:6"},
-        {"url": "https://fediverse.tv/feeds/videos.xml?videoChannelId=19129", "name": "Atareao (Vídeos)", "home": "https://fediverse.tv/c/atareao/videos"},
-        {"url": "https://fediverse.tv/feeds/videos.xml?videoChannelId=22590", "name": "Dani Sánchez", "home": "https://fediverse.tv/c/danisanchez.net/videos"},
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC6ImDlcMZukA-pqtIaXqbdA", "name": "Cumpi Linux", "home": "https://cumpi.ga/"},
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCl8XUDjAOLc7GNKcDp9Nepg", "name": "Locos por Linux", "home": "https://www.youtube.com/@LocosporLinux/videos"},
-        {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCFRuGs1rZJ4oAaLsAjypt7A", "name": "Desde Linux con Amor", "home": "https://www.youtube.com/@DesdeLinuxConAmor/videos"},
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCFnFYB2mWAdVwA7Q94AaLPA", "name": "Linux en Casa", "home": "https://www.youtube.com/@LinuxenCasa/videos"},
-        {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCgErca6xmDIcaHDnVghHk6w", "name": "Nos Gusta Linux", "home": "https://www.youtube.com/@nosgustalinux/videos"},
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCta4Iy4TzMx8Xo0pwpkbWgg", "name": "PatoJAD", "home": "https://www.youtube.com/@PatoJAD/videos"}
       ],
       "more": [
-        {"url": "https://voidnull.es/rss/", "name": "voidNull", "home": "https://voidnull.es/"},
         {"url": "https://www.ochobitshacenunbyte.com/feed/", "name": "ochobitshacenunbyte", "home": "https://www.ochobitshacenunbyte.com/"},
-        {"url": "https://podcastlinux.com/feed", "name": "Podcast Linux", "home": "https://podcastlinux.com/"},
         {"url": "https://ugeek.github.io/feed.xml", "name": "Blog Podcast uGeek", "home": "https://ugeek.github.io/"},
         {"url": "https://elblogdelazaro.org/index.xml", "name": "El Blog de Lázaro", "home": "https://elblogdelazaro.org/"},
         {"url": "https://atareao.es/feed/", "name": "Atareao", "home": "https://atareao.es/"},
         {"url": "https://elbinario.net/feed/", "name": "Elbinario", "home": "https://elbinario.net/"},
         {"url": "https://ubuntuperonista.blogspot.com/feeds/posts/default", "name": "Ubuntu Peronista", "home": "https://ubuntuperonista.blogspot.com/"},
-        {"url": "https://martinezmartinez.eu/feed/", "name": "Blog de informática", "home": "https://martinezmartinez.eu/"},
-        {"url": "https://feeds.feedburner.com/geeklandlinux", "name": "geekland", "home": "https://geekland.eu/"},
         {"url": "https://cambiatealinux.com/rss", "name": "Cambiate a Linux", "home": "https://cambiatealinux.com/"},
-        {"url": "https://www.bujarra.com/feed/", "name": "Blog Bujarra.com", "home": "https://www.bujarra.com/"},
         {"url": "https://56k.es/feed/", "name": "56K", "home": "https://56k.es/"},
         {"url": "http://feeds.feedburner.com/UnBrutoConDebian", "name": "Un bruto con Debian", "home": "https://unbrutocondebian.blogspot.com/"}
       ]
@@ -134,11 +116,9 @@
       ],
       "videos": [
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCHZyqB9qHGGGw5QeRVEbQDg", "name": "Linux Guides DE", "home": "https://www.youtube.com/channel/UCHZyqB9qHGGGw5QeRVEbQDg/videos"},
-        {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbvvtG9I_hrfSqT9PfXFXtw", "name": "MichlFranken", "home": "https://www.youtube.com/@MichlFranken/videos"},
-        {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UC1FC90ObOrYdfsPposnbbMQ", "name": "So'n Typ im Internet", "home": "https://www.youtube.com/@SonTypimInternet/videos"}
+        {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCbvvtG9I_hrfSqT9PfXFXtw", "name": "MichlFranken", "home": "https://www.youtube.com/@MichlFranken/videos"}
       ],
       "more": [
-        {"url": "https://www.howtoforge.de/feed/", "name": "HowtoForge", "home": "https://www.howtoforge.de/"},
         {"url": "https://linux-content.org/feed/", "name": "Linux Content", "home": "https://linux-content.org/"},
         {"url": "https://netzpalaver.de/feed/", "name": "Netzpalaver", "home": "https://netzpalaver.de/"}
       ]
