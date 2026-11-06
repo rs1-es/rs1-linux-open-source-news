@@ -158,7 +158,9 @@ def fetchAll():
     return results
 
 def sortFeeds(feed):
-    return sorted(feed, key=lambda entry: entry[5], reverse=True)
+    """Ordena de más a menos reciente, descartando las entradas con fecha futura (si no, quedarían siempre las primeras)."""
+    now = time.time()
+    return sorted((entry for entry in feed if entry[5] <= now), key=lambda entry: entry[5], reverse=True)
 
 MIN_TITLE_DUP = 20  # los títulos más cortos no se comparan: demasiados falsos positivos
 
