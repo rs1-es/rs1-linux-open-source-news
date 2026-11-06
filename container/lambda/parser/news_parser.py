@@ -1,7 +1,9 @@
 import feedparser
+import collections
 import datetime
 import html
 import json
+import math
 import os
 import time
 import pytz
@@ -18,7 +20,10 @@ for _lang in strings.values():
 # Si OUTPUT_DIR está definido se escribe en local y no se sube nada a S3
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
 BUCKET = "news.rs1.es"
-FEED_TIMEOUT = 60  # segundos por feed
+FEED_TIMEOUT = 120  # segundos por feed
+PAGE_ENTRIES = 150  # entradas por página
+SOURCE_SHARE_FACTOR = 2  # una fuente ocupa como máximo el doble de su parte equitativa de la página
+MIN_PER_SOURCE = 5  # tope mínimo por fuente, aunque haya muchas
 # Última lista buena de cada feed, para cuando falla la descarga (p. ej. YouTube devuelve 404)
 CACHE_KEY = "cache/feeds.json"
 CACHE_MAX_AGE = 7 * 24 * 3600  # segundos; pasado ese tiempo se descartan las entradas guardadas
@@ -58,10 +63,12 @@ FOOTER = """<footer>
 
 def entryDate(entry, author):
     """Fecha de la entrada normalizada por feedparser (UTC), o None si no tiene."""
-    field = "updated" if author in ["DistroWatch", "LWN.net"] else "published"
-    parsed = entry.get(field + "_parsed")
-    if parsed:
-        return datetime.datetime(*parsed[:6], tzinfo=datetime.timezone.utc)
+    # Preferencia por feed; si falta el campo preferido se usa el otro (algunos feeds sólo traen "updated")
+    fields = ["updated", "published"] if author in ["DistroWatch", "LWN.net"] else ["published", "updated"]
+    for field in fields:
+        parsed = entry.get(field + "_parsed")
+        if parsed:
+            return datetime.datetime(*parsed[:6], tzinfo=datetime.timezone.utc)
     return None
 
 def parseFeed(url, author, homeURL):
@@ -70,12 +77,15 @@ def parseFeed(url, author, homeURL):
     if not d.entries:
         # Motivo del fallo: código HTTP y excepción de feedparser (red, XML inválido...)
         print("%s: no entries (HTTP %s, %s)" % (author, d.get("status", "-"), d.get("bozo_exception", "no error")))
+    undated = 0
     for entry in d.entries:
         dt = entryDate(entry, author)
         if dt is None:
-            print("%s: no date in %s" % (author, entry.get("link")))
+            undated += 1
             continue
         entries.append([entry.title, entry.link, dt.isoformat(), author, homeURL, dt.timestamp()])
+    if undated:
+        print("%s: %d of %d entries without date" % (author, undated, len(d.entries)))
     return entries
 
 def parseFeedSafe(feed):
@@ -150,8 +160,20 @@ def fetchAll():
 def sortFeeds(feed):
     return sorted(feed, key=lambda entry: entry[5], reverse=True)
 
-def limitFeeds(feed):
-    return feed[0:150]
+def limitFeeds(feed, numSources):
+    """Las PAGE_ENTRIES entradas más recientes, con un tope por fuente para que ninguna acapare la página.
+
+    El tope es SOURCE_SHARE_FACTOR veces la parte equitativa de cada fuente (con pocas fuentes no llega a aplicarse)."""
+    perSource = max(MIN_PER_SOURCE, math.ceil(SOURCE_SHARE_FACTOR * PAGE_ENTRIES / max(numSources, 1)))
+    count = collections.Counter()
+    limited = []
+    for entry in feed:  # ya ordenadas de más a menos reciente
+        if count[entry[3]] < perSource:
+            count[entry[3]] += 1
+            limited.append(entry)
+            if len(limited) == PAGE_ENTRIES:
+                break
+    return limited
 
 def uploadFileS3(localFile):
     import boto3
@@ -254,7 +276,7 @@ def mainProcess(section, feedInfo, lang, fetched):
         print("%s: no entries, page not updated" % path)
         return False
 
-    joinFeedSorted = limitFeeds(sortFeeds(receivedFeeds))
+    joinFeedSorted = limitFeeds(sortFeeds(receivedFeeds), len(feedInfo))
 
     os.makedirs(WORK_DIR + "/" + path, exist_ok=True)
     with open(WORK_DIR + "/" + path + "index.html", "w") as htmlFile:

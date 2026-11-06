@@ -9,7 +9,7 @@ FUNCTION=news-rs1-es-parser
 ROLE=news-rs1-es-parser
 BUCKET=news.rs1.es
 RUNTIME=python3.12
-MEMORY=1024
+MEMORY=1536
 TIMEOUT=300
 
 rm -rf build function.zip
