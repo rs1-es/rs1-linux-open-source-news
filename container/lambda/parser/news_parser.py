@@ -160,6 +160,24 @@ def fetchAll():
 def sortFeeds(feed):
     return sorted(feed, key=lambda entry: entry[5], reverse=True)
 
+MIN_TITLE_DUP = 20  # los títulos más cortos no se comparan: demasiados falsos positivos
+
+def dedupeFeeds(feed):
+    """Quita las entradas repetidas entre fuentes (mismo enlace o mismo título), conservando la más antigua, que suele ser la original."""
+    def keys(entry):
+        link = entry[1].split("#")[0].rstrip("/").lower()
+        title = " ".join(entry[0].lower().split())
+        return [link] + ([title] if len(title) >= MIN_TITLE_DUP else [])
+    owner, result = {}, []
+    for entry in sorted(feed, key=lambda e: e[5]):  # de más antigua a más reciente
+        ks = keys(entry)
+        if any(owner.get(k, entry[3]) != entry[3] for k in ks):
+            continue
+        for k in ks:
+            owner[k] = entry[3]
+        result.append(entry)
+    return sorted(result, key=lambda e: e[5], reverse=True)
+
 def limitFeeds(feed, numSources):
     """Las PAGE_ENTRIES entradas más recientes, con un tope por fuente para que ninguna acapare la página.
 
@@ -276,7 +294,7 @@ def mainProcess(section, feedInfo, lang, fetched):
         print("%s: no entries, page not updated" % path)
         return False
 
-    joinFeedSorted = limitFeeds(sortFeeds(receivedFeeds), len(feedInfo))
+    joinFeedSorted = limitFeeds(dedupeFeeds(sortFeeds(receivedFeeds)), len(feedInfo))
 
     os.makedirs(WORK_DIR + "/" + path, exist_ok=True)
     with open(WORK_DIR + "/" + path + "index.html", "w") as htmlFile:

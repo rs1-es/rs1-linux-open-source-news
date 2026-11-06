@@ -26,14 +26,12 @@
         {"url": "https://planet.debian.org/rss20.xml", "name": "Planet Debian", "home": "https://planet.debian.org/"},
         {"url": "https://www.linuxinsider.com/rss-feed", "name": "LinuxInsider", "home": "https://www.linuxinsider.com/"},
         {"url": "https://joho-todai.com/en/rss/", "name": "Joho no Todai (English)", "home": "https://joho-todai.com/"},
-        {"url": "https://news.itsfoss.com/rss/", "name": "It's FOSS News", "home": "https://news.itsfoss.com/"},
         {"url": "https://planet.gnome.org/rss20.xml", "name": "Planet GNOME", "home": "https://planet.gnome.org/"},
         {"url": "https://planet.fedoraproject.org/rss20.xml", "name": "Fedora Planet", "home": "https://planet.fedoraproject.org/"},
         {"url": "https://planet.kernel.org/rss20.xml", "name": "Planet Kernel", "home": "https://planet.kernel.org/"},
         {"url": "https://planet.freedesktop.org/atom.xml", "name": "Planet Freedesktop", "home": "https://planet.freedesktop.org/"},
         {"url": "https://www.osnews.com/feed/", "name": "OSnews", "home": "https://www.osnews.com/"},
         {"url": "https://blog.documentfoundation.org/feed/", "name": "The Document Foundation", "home": "https://blog.documentfoundation.org/"},
-        {"url": "https://kde.org/index.xml", "name": "KDE Announcements", "home": "https://kde.org/"},
         {"url": "https://pointieststick.com/feed/", "name": "This Week in KDE", "home": "https://pointieststick.com/"},
         {"url": "https://www.linuxfoundation.org/blog/rss.xml", "name": "Linux Foundation", "home": "https://www.linuxfoundation.org/blog"},
         {"url": "https://static.fsf.org/fsforg/rss/blogs.xml", "name": "FSF Blogs", "home": "https://www.fsf.org/"},
@@ -101,7 +99,6 @@
         {"url": "https://nksistemas.com/feed/", "name": "NKSistemas", "home": "https://nksistemas.com/"},
         {"url": "https://www.kdeblog.com/feed", "name": "KDE Blog", "home": "https://www.kdeblog.com/"},
         {"url": "https://www.linuxparty.es/?format=feed&type=rss", "name": "LinuxParty", "home": "https://www.linuxparty.es/"},
-        {"url": "https://laboratoriolinux.es/?format=feed&type=rss", "name": "Laboratorio Linux", "home": "https://laboratoriolinux.es/"},
         {"url": "https://feeds.feedburner.com/ubunlog", "name": "Ubunlog", "home": "https://ubunlog.com/"}
       ],
       "videos": [
@@ -136,8 +133,7 @@
         {"url": "https://www.computerbase.de/thema/linux/index.atom", "name": "ComputerBase", "home": "https://www.computerbase.de/thema/linux/"},
         {"url": "https://holarse.de/rss.xml", "name": "HOLARSE", "home": "https://holarse.de/"},
         {"url": "https://www.heise.de/thema/Open-Source.xml", "name": "Heise Open Source", "home": "https://www.heise.de/thema/Open-Source"},
-        {"url": "https://rss.golem.de/rss.php?tp=oss&feed=RSS2.0", "name": "Golem Open Source", "home": "https://www.golem.de/"},
-        {"url": "https://fsfe.org/news/news.de.rss", "name": "FSFE (Deutsch)", "home": "https://fsfe.org/news/news.de.html"}
+        {"url": "https://rss.golem.de/rss.php?tp=oss&feed=RSS2.0", "name": "Golem Open Source", "home": "https://www.golem.de/"}
       ],
       "videos": [
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCHZyqB9qHGGGw5QeRVEbQDg", "name": "Linux Guides DE", "home": "https://www.youtube.com/channel/UCHZyqB9qHGGGw5QeRVEbQDg/videos"},
@@ -159,7 +155,6 @@
         {"url": "https://linuxfr.org/news.atom", "name": "LinuxFr.org", "home": "https://linuxfr.org/"},
         {"url": "https://www.april.org/rss.xml", "name": "April", "home": "https://www.april.org/"},
         {"url": "https://framablog.org/feed/", "name": "Framablog", "home": "https://framablog.org/"},
-        {"url": "https://fsfe.org/news/news.fr.rss", "name": "FSFE (Français)", "home": "https://fsfe.org/news/news.fr.html"},
         {"url": "https://www.numerama.com/tag/linux/feed/", "name": "Numerama (Linux)", "home": "https://www.numerama.com/tag/linux/"}
       ],
       "videos": [
@@ -180,8 +175,7 @@
         {"url": "https://sempreupdate.com.br/feed/", "name": "SempreUpdate", "home": "https://sempreupdate.com.br/"},
         {"url": "https://livreeaberto.com/artigos.rss", "name": "é Livre e Aberto", "home": "https://livreeaberto.com/"},
         {"url": "https://www.vivaolinux.com.br/index.rdf", "name": "Viva o Linux", "home": "https://www.vivaolinux.com.br/"},
-        {"url": "https://br-linux.org/feed/", "name": "BR-Linux", "home": "https://br-linux.org/"},
-        {"url": "https://fsfe.org/news/news.pt.rss", "name": "FSFE (Português)", "home": "https://fsfe.org/news/news.pt.html"}
+        {"url": "https://br-linux.org/feed/", "name": "BR-Linux", "home": "https://br-linux.org/"}
       ],
       "videos": [
         {"url": "https://www.youtube.com/feeds/videos.xml?channel_id=UCEf5U1dB5a2e2S-XUlnhxSA", "name": "Diolinux (Videos)", "home": "https://www.youtube.com/@Diolinux/videos"},
