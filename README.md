@@ -2,7 +2,7 @@
 
 Javascript-free Linux/open source news aggregator.
 
-This is the source code of https://news.rs1.es. A Python script parses feeds (RSS/Atom/RDF), joins them, sorts them by date and generates one static page per language and section (news, videos, more). It runs as an AWS Lambda function (zip package, Python 3.12) that uploads the pages to the S3 bucket serving the site.
+This is the source code of https://news.rs1.es. A Python script parses feeds (RSS/Atom/RDF), joins them, sorts them by date and generates one static page per language and section (news, videos, more). The last good entries of every feed are cached (`cache/feeds.json`, up to 7 days), so a feed that is temporarily down doesn't disappear from the pages. It runs as an AWS Lambda function (zip package, Python 3.12) that uploads the pages to the S3 bucket serving the site.
 
 ### Layout
 

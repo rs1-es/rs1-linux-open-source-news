@@ -3,6 +3,7 @@ import datetime
 import html
 import json
 import os
+import time
 import pytz
 import func_timeout
 from concurrent.futures import ThreadPoolExecutor
@@ -18,6 +19,10 @@ for _lang in strings.values():
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
 BUCKET = "news.rs1.es"
 FEED_TIMEOUT = 60  # segundos por feed
+# Última lista buena de cada feed, para cuando falla la descarga (p. ej. YouTube devuelve 404)
+CACHE_KEY = "cache/feeds.json"
+CACHE_MAX_AGE = 7 * 24 * 3600  # segundos; pasado ese tiempo se descartan las entradas guardadas
+CACHE_MAX_ENTRIES = 50  # entradas más recientes que se guardan por feed
 WORK_DIR = OUTPUT_DIR or "/tmp"
 
 SITE_NAME = "RS1 Linux & Open Source News"
@@ -83,12 +88,61 @@ def parseFeedSafe(feed):
         print("%s: %s" % (feed[1], e))
     return []
 
+def loadCache():
+    """Caché {url: {"fetched": timestamp, "entries": [...]}}. Vacío si no existe o no se puede leer."""
+    try:
+        if OUTPUT_DIR:
+            with open(os.path.join(OUTPUT_DIR, CACHE_KEY), encoding="utf-8") as f:
+                return json.load(f)
+        import boto3
+        body = boto3.client("s3").get_object(Bucket=BUCKET, Key=CACHE_KEY)["Body"].read()
+        return json.loads(body)
+    except Exception as e:
+        # Sin permiso de listado, S3 responde AccessDenied (no NoSuchKey) si el objeto no existe
+        print("Cache not loaded (%s)" % e)
+        return {}
+
+def saveCache(cache):
+    """Un fallo al guardar no debe impedir publicar las páginas."""
+    try:
+        data = json.dumps(cache, ensure_ascii=False, separators=(",", ":"))
+        if OUTPUT_DIR:
+            path = os.path.join(OUTPUT_DIR, CACHE_KEY)
+            os.makedirs(os.path.dirname(path), exist_ok=True)
+            with open(path, "w", encoding="utf-8") as f:
+                f.write(data)
+        else:
+            import boto3
+            boto3.client("s3").put_object(Bucket=BUCKET, Key=CACHE_KEY, Body=data.encode("utf-8"),
+                                          ContentType="application/json", CacheControl="no-cache")
+    except Exception as e:
+        print("Cache not saved (%s)" % e)
+
 def fetchAll():
-    """Descarga todos los feeds de todos los idiomas a la vez. Devuelve {url: entradas}."""
+    """Descarga todos los feeds de todos los idiomas a la vez. Devuelve {url: entradas}.
+
+    Si un feed no devuelve nada se usan sus últimas entradas buenas, si no son demasiado antiguas."""
     feeds = [f for lang in LANGUAGES for section in SECTIONS for f in strings[lang]["entries"][section]]
     with ThreadPoolExecutor(max_workers=16) as pool:
         results = {f[0]: entries for f, entries in zip(feeds, pool.map(parseFeedSafe, feeds))}
-    empty = [f[1] for f in feeds if not results[f[0]]]
+
+    now = time.time()
+    oldCache = loadCache()
+    newCache, cached, empty = {}, [], []
+    for f in feeds:
+        url, name = f[0], f[1]
+        if results[url]:
+            newCache[url] = {"fetched": now, "entries": sortFeeds(results[url])[:CACHE_MAX_ENTRIES]}
+        elif url in oldCache and now - oldCache[url]["fetched"] <= CACHE_MAX_AGE:
+            newCache[url] = oldCache[url]
+            results[url] = oldCache[url]["entries"]
+            cached.append("%s (%dh)" % (name, (now - oldCache[url]["fetched"]) / 3600))
+        else:
+            empty.append(name)
+    saveCache(newCache)  # sólo conserva los feeds actuales: los eliminados de feeds.json desaparecen
+
+    if cached:
+        print("Feeds served from cache (%d): %s" % (len(cached), ", ".join(cached)))
     if empty:
         print("Feeds without entries (%d): %s" % (len(empty), ", ".join(empty)))
     return results
