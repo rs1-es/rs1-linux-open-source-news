@@ -20,7 +20,7 @@ for _lang in strings.values():
 # Si OUTPUT_DIR está definido se escribe en local y no se sube nada a S3
 OUTPUT_DIR = os.environ.get("OUTPUT_DIR")
 BUCKET = "news.rs1.es"
-FEED_TIMEOUT = 120  # segundos por feed
+FEED_TIMEOUT = 60  # segundos por feed
 PAGE_ENTRIES = 150  # entradas por página
 SOURCE_SHARE_FACTOR = 2  # una fuente ocupa como máximo el doble de su parte equitativa de la página
 MIN_PER_SOURCE = 5  # tope mínimo por fuente, aunque haya muchas
